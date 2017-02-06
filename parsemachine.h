@@ -3,7 +3,9 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <QVector>
 #include "logformat.h"
+
 #define FLSTATE ParseMachine::State_line
 
 class ParseData
@@ -21,7 +23,11 @@ class ParseMachine
     QTextStream m_logFileStream;
     LogFormat m_format;
     ParseData m_data;
-    void findLine();
+    NearLogs_t m_nearLogs;
+    QVector<CamLog_t> m_vectCamLog;
+    int picDone;
+    void print();
+
     enum State_line
     {
         INIT,
@@ -42,10 +48,11 @@ class ParseMachine
     State_line FL_on_FillFormatTable();
 public:
     ParseMachine();
+        void run();
+        int getPicDone() const;
+
 private:
-    void DecodeCAMFormat(QStringList formatLine);
-    void DecodeGPSFormat(QStringList formatLine);
-    bool FormatValid(int ptr[], int sizeFmt, int lineSize);
+        CamLog_t decodeLines(NearLogs_t nearlogs);
 };
 
 #endif // PARSEMACHINE_H

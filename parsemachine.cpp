@@ -1,18 +1,37 @@
 #include "parsemachine.h"
-#define CONDITION true //temporary condition
-ParseMachine::ParseMachine()
+
+ParseMachine::ParseMachine():
+    m_logFile("/home/office/QLogNEU/37.log"),
+    picDone(0)
 {
 
 }
 
-void ParseMachine::findLine()
+CamLog_t ParseMachine::decodeLines(NearLogs_t nearlogs)
+{
+    CamLog_t localLog;
+    localLog.alt = m_format.getAltitudeFromGPS(nearlogs.lastGPS);
+    localLog.CoG = m_format.getCourseOverGroundFromGPS(nearlogs.lastGPS);
+    localLog.lat = m_format.getLatitudeFromGPS(nearlogs.lastGPS);
+    localLog.lon = m_format.getLongitudeFromGPS(nearlogs.lastGPS);
+    localLog.GS  = m_format.getGroundSpeedFromGPS(nearlogs.lastGPS);
+
+    localLog.time  = m_format.getTimeFromCAM(nearlogs.CAM);
+    localLog.roll  = m_format.getRollFromCAM(nearlogs.CAM);
+    localLog.pitch = m_format.getPitchFromCAM(nearlogs.CAM);
+    localLog.yaw   = m_format.getYawFromCAM(nearlogs.CAM);
+
+    return localLog;
+}
+
+void ParseMachine::run()
 {
     State_line state = INIT;
     while(!m_data.getEof())
     {
         switch (state) {
         case INIT:
-            state = on_FL_Init();
+            state = FL_on_Init();
             break;
         case FILL_FORMAT_TABLE:
             state = FL_on_FillFormatTable();
@@ -37,12 +56,13 @@ void ParseMachine::findLine()
             break;
         }
     }
+    print();
 }
 
 FLSTATE ParseMachine::FL_on_Init()
 {
-    m_logFile.open("filename", QIODevice::ReadOnly);
-    m_logFileStream(&m_logFile);
+    m_logFile.open(QIODevice::ReadOnly);
+    m_logFileStream.setDevice(&m_logFile);
     return FILL_FORMAT_TABLE;
 }
 
@@ -51,72 +71,99 @@ FLSTATE ParseMachine::FL_on_FillFormatTable()
     while(!m_logFileStream.atEnd())
     {
         QString line;
-        line = logFile.readLine();
+        line = m_logFileStream.readLine();
         QStringRef label = line.leftRef(3);
-        if (lastPos != 0 && label.startsWith("FMT"))
+        if (label.startsWith("FMT"))
         {
            m_format.setFormat(line);
         }
-
+        if(m_format.isReady()) return SEARCHING_FOR_CAM;
     }
     return END_OF_LOG;
 }
 
 FLSTATE ParseMachine::FL_on_SearchingForCam()
 {
-    //ReadLine
-    //Save last GPS & ATT
-    //Branch to Found Cam if line is CAM
     while(!m_logFileStream.atEnd())
     {
-
+        QString line;
+        line = m_logFileStream.readLine();
+        QStringRef label = line.leftRef(3);
+        if(label.startsWith("CAM"))
+        {
+            m_nearLogs.CAM = line;
+            return FOUND_CAM;
+        }
+        else if(label.startsWith("GPS"))
+        {
+            m_nearLogs.lastGPS = line;
+        }
+        else if(label.startsWith("ATT"))
+        {
+            m_nearLogs.lastATT = line;
+        }
     }
     return END_OF_LOG;
 }
 
 FLSTATE ParseMachine::FL_on_FoundCam()
 {
-    //ReadLine
-    //Branch to Found GPS if line is GPS
-    //branch to Found ATT if line is ATT
     while(!m_logFileStream.atEnd())
     {
-
+        QString line;
+        line = m_logFileStream.readLine();
+        QStringRef label = line.leftRef(3);
+        if(label.startsWith("GPS"))
+        {
+            m_nearLogs.nextGPS = line;
+            return FOUND_GPS;
+        }
+        else if(label.startsWith("ATT"))
+        {
+            m_nearLogs.nextATT = line;
+            return FOUND_ATT;
+        }
     }
     return END_OF_LOG;
 }
 
 FLSTATE ParseMachine::FL_on_FoundGPS()
 {
-    //ReadLine
-    //Branch to PIC DONE if line is ATT
     while(!m_logFileStream.atEnd())
     {
-
+        QString line;
+        line = m_logFileStream.readLine();
+        QStringRef label = line.leftRef(3);
+        if(label.startsWith("ATT"))
+        {
+            m_nearLogs.nextATT = line;
+            return PIC_DONE;
+        }
     }
     return END_OF_LOG;
 }
 
 FLSTATE ParseMachine::FL_on_FoundAtt()
 {
-    //ReadLine
-    //Branch to PIC DONE if line is GPS
     while(!m_logFileStream.atEnd())
     {
-
+        QString line;
+        line = m_logFileStream.readLine();
+        QStringRef label = line.leftRef(3);
+        if(label.startsWith("GPS"))
+        {
+            m_nearLogs.nextGPS = line;
+            return PIC_DONE;
+        }
     }
     return END_OF_LOG;
 }
 
 FLSTATE ParseMachine::FL_on_PicDone()
 {
-    //Read all lines to vector
-    //Decode and fill waht need to be filled
-    while(!m_logFileStream.atEnd())
-    {
-
-    }
-    return END_OF_LOG;
+    m_vectCamLog.push_back(decodeLines(m_nearLogs));
+    picDone++;
+    return SEARCHING_FOR_CAM;
 }
 
 ParseData::ParseData():
@@ -135,11 +182,34 @@ void ParseData::setEof(bool value)
     eof = value;
 }
 
-bool ParseMachine::FormatValid(int ptr[], int sizeFmt, int lineSize)
+
+int ParseMachine::getPicDone() const
 {
-    for(int i = 0; i < sizeFmt; ++i)
+    return picDone;
+}
+
+void ParseMachine::print()
+{
+    QFile file("/home/office/QLogNEU/printOut.txt");
+    file.open(QIODevice::WriteOnly);
+    QTextStream str(&file);
+
+    for(int i = 0; i<m_vectCamLog.size(); i++)
     {
-        if(ptr[i] >= lineSize) return false;
+        str << m_vectCamLog[i].alt << " | " << m_vectCamLog[i].lat << " | " << m_vectCamLog[i].lon << " | " << m_vectCamLog[i].roll << " | " << m_vectCamLog[i].pitch << " | " << m_vectCamLog[i].yaw << '\n';
+
+               /*
+                * typedef struct {
+           unsigned long	time;
+           float			alt;
+           double          lat;
+           double          lon;
+           float           roll;
+           float           pitch;
+           float           yaw;
+           float			CoG;		//GPS Course over Ground
+           float			GS;			//GPS Ground Speed [m/s]
+       } CamLog_t;*/
     }
-    return true;
+    file.close();
 }

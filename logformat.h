@@ -1,7 +1,21 @@
 #ifndef LOGFORMAT_H
 #define LOGFORMAT_H
 
-#include <QString>
+#define TIME_d 0
+#define ROLL_d 1
+#define PITCH_d 2
+#define YAW_d 3
+
+
+#define LAT_d 0
+#define LON_d 1
+#define ALT_d 2
+#define GS_d 3
+#define CoG_d 4
+
+
+#include "global_defs.h"
+
 
 
 class LogFormat
@@ -11,7 +25,7 @@ class LogFormat
     bool m_CamSet;
     bool m_GpsSet;
 public:
-    bool formatReady();
+    bool isReady();
     void setFormat(QString formatLine);
     double getRollFromCAM(QString camLine);
     double getPitchFromCAM(QString camLine);

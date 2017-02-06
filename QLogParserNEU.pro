@@ -30,6 +30,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     parsemachine.h \
-    logformat.h
+    logformat.h \
+    global_defs.h
 
 FORMS    += mainwindow.ui
