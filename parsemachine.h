@@ -63,6 +63,8 @@ public:
     void run();
     int getPicDone() const;
 
+    QVector<CamLog_t> getVectCamLog() const;
+
 private:
 
 };

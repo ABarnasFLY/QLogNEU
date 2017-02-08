@@ -4,12 +4,16 @@ DataAnalysis::DataAnalysis(QDir picDir, QString logPath):
     m_parser(logPath)
 {
     createFileSet(picDir);
+    m_parser.run();
+    m_vectCamLog = m_parser.getVectCamLog();
 }
 
 DataAnalysis::DataAnalysis(QString picBackupPath, QString logPath):
     m_parser(logPath)
 {
     createFileSet(picBackupPath);
+    m_parser.run();
+    m_vectCamLog = m_parser.getVectCamLog();
 }
 
 void DataAnalysis::fillDelays()
@@ -30,7 +34,6 @@ void DataAnalysis::createFileSet(QDir picDir)
             {
                 QDateTime	picTimeCAM(fInfo.lastModified()); // picture time as measured by the camera
                 QDateTime	picTimeUTC(picTimeCAM);           // picture time UTC
-                picTimeUTC.addSecs(cam2utcClkOffs);
                 uint picTimeArdu(timeUtils::convTimeUnix2Ardu(picTimeUTC.toTime_t()));	// picture time as stored by ArduPilot 2.5
                 m_fileSet.insert(picTimeArdu, dir_iter.filePath());
             }

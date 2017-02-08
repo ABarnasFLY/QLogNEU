@@ -195,3 +195,8 @@ void ParseMachine::print()
     }
     file.close();
 }
+
+QVector<CamLog_t> ParseMachine::getVectCamLog() const
+{
+    return m_vectCamLog;
+}

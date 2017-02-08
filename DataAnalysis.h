@@ -8,6 +8,7 @@ class DataAnalysis
 {
     fileSet_t m_fileSet;
     ParseMachine m_parser;
+    QVector<CamLog_t> m_vectCamLog;
     //alglib complex vector delay1, delay2
 
 

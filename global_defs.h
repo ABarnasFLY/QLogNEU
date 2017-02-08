@@ -1,6 +1,7 @@
 #ifndef GLOBAL_DEFS
 #define GLOBAL_DEFS
 #include <QString>
+#include <QVector>
 #include <QStringList>
 #include <QFileSystemModel>
 #include <QFile>
