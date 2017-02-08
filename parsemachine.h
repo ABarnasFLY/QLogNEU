@@ -6,27 +6,19 @@
 #include <QVector>
 #include "logformat.h"
 
-#define FLSTATE ParseMachine::State_line
+#define PARSERSTATE ParseMachine::State_line
 
-class ParseData
-{
-    bool eof;
-public:
-    ParseData();
-    bool getEof() const;
-    void setEof(bool value);
-};
+
 
 class ParseMachine
 {
     QFile m_logFile;
     QTextStream m_logFileStream;
     LogFormat m_format;
-    ParseData m_data;
     NearLogs_t m_nearLogs;
     QVector<CamLog_t> m_vectCamLog;
     int picDone;
-    void print();
+    bool eof;
 
     enum State_line
     {
@@ -39,20 +31,40 @@ class ParseMachine
         PIC_DONE,
         END_OF_LOG
     };
-    State_line FL_on_Init();
-    State_line FL_on_SearchingForCam();
-    State_line FL_on_FoundCam();
-    State_line FL_on_FoundGPS();
-    State_line FL_on_FoundAtt();
-    State_line FL_on_PicDone();
-    State_line FL_on_FillFormatTable();
+    //State handlers////////////////
+    State_line on_Init();
+    State_line on_SearchingForCam();
+    State_line on_FoundCam();
+    State_line on_FoundGPS();
+    State_line on_FoundAtt();
+    State_line on_PicDone();
+    State_line on_FillFormatTable();
+    ////////////////////////////////
+
+    CamLog_t decodeLines(NearLogs_t nearlogs);
+
+    ///////////////////////////////
+    /// \brief print
+    /// Print some data from vector for debug purpose
+    void print();
 public:
-    ParseMachine();
-        void run();
-        int getPicDone() const;
+    ///////////////////////////////
+    /// \brief ParseMachine
+    /// \param picPath
+    /// Parser constructor, picPath is obligatory
+    ParseMachine(QString picPath);
+
+    bool getEof() const;
+    void setEof(bool value);
+
+    ///////////////////////////////
+    /// \brief run
+    /// Parse log and create vector of pics data
+    void run();
+    int getPicDone() const;
 
 private:
-        CamLog_t decodeLines(NearLogs_t nearlogs);
+
 };
 
 #endif // PARSEMACHINE_H

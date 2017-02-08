@@ -26,11 +26,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     parsemachine.cpp \
-    logformat.cpp
+    logformat.cpp \
+    DataAnalysis.cpp \
+    timeutils.cpp
 
 HEADERS  += mainwindow.h \
     parsemachine.h \
     logformat.h \
-    global_defs.h
+    global_defs.h \
+    DataAnalysis.h \
+    timeutils.h
 
 FORMS    += mainwindow.ui

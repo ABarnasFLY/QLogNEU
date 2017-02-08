@@ -2,6 +2,11 @@
 #define GLOBAL_DEFS
 #include <QString>
 #include <QStringList>
+#include <QFileSystemModel>
+#include <QFile>
+#include <QMultiMap>
+
+typedef QMultiMap<uint, QString> fileSet_t;
 
 typedef struct {
     unsigned long	time;

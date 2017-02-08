@@ -15,7 +15,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    ParseMachine parser;
-    parser.run();
-    ui->label->setText(QString::number(parser.getPicDone()));
+    //ParseMachine parser;
+    //parser.run();
+    //ui->label->setText(QString::number(parser.getPicDone()));
 }
