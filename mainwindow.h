@@ -1,8 +1,16 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
+#ifdef _WIN32               //seting default file path regarding OS
+#define DEFAULT_DIR "C:/"
+#elif
+#define DEFAULT_DIR "/home/"
+#endif
+//During runtime default path is changed to recently used
 #include <QMainWindow>
-#include "parsemachine.h"
+#include <QFileDialog>
+#include <QString>
+
+#include "DataSetAnalysis.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,10 +25,26 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_pb_browse_log_clicked();
+
+    void on_pb_browse_pic_clicked();
+
+    void on_pb_rin_rinex_clicked();
+
+    void on_pb_rin_pos_clicked();
+
+    void on_pb_rin_log_clicked();
+
+    void on_pb_rin_pics_clicked();
+
+    void on_pb_binToLog_open_clicked();
+
+    void on_pb_binToLog_save_clicked();
 
 private:
     Ui::MainWindow *ui;
+
+    QString m_defaultDir;
 };
 
 #endif // MAINWINDOW_H
