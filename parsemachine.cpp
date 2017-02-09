@@ -40,7 +40,6 @@ void ParseMachine::run()
             break;
         }
     }
-    print();
 }
 
 PARSERSTATE ParseMachine::on_Init()

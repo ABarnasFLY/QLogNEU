@@ -27,14 +27,41 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     parsemachine.cpp \
     logformat.cpp \
-    DataAnalysis.cpp \
-    timeutils.cpp
+    timeutils.cpp \
+    alglib/alglibinternal.cpp \
+    alglib/alglibmisc.cpp \
+    alglib/ap.cpp \
+    alglib/dataanalysis.cpp \
+    alglib/diffequations.cpp \
+    alglib/fasttransforms.cpp \
+    alglib/integration.cpp \
+    alglib/interpolation.cpp \
+    alglib/linalg.cpp \
+    alglib/optimization.cpp \
+    alglib/solvers.cpp \
+    alglib/specialfunctions.cpp \
+    alglib/statistics.cpp \
+    DataSetAnalysis.cpp
 
 HEADERS  += mainwindow.h \
     parsemachine.h \
     logformat.h \
     global_defs.h \
-    DataAnalysis.h \
-    timeutils.h
+    timeutils.h \
+    alglib/alglibinternal.h \
+    alglib/alglibmisc.h \
+    alglib/ap.h \
+    alglib/dataanalysis.h \
+    alglib/diffequations.h \
+    alglib/fasttransforms.h \
+    alglib/integration.h \
+    alglib/interpolation.h \
+    alglib/linalg.h \
+    alglib/optimization.h \
+    alglib/solvers.h \
+    alglib/specialfunctions.h \
+    alglib/statistics.h \
+    alglib/stdafx.h \
+    DataSetAnalysis.h
 
 FORMS    += mainwindow.ui
