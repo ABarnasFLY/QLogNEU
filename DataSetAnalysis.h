@@ -4,9 +4,11 @@
 #include "timeutils.h"
 #include "parsemachine.h"
 #include "alglib/fasttransforms.h"
+#include <QObject>
 
-class DataAnalysis
+class DataAnalysis : public QObject
 {
+    Q_OBJECT
     fileSet_t m_fileSet;
     ParseMachine m_parser;
     QVector<CamLog_t> m_vectCamLog;
@@ -31,8 +33,8 @@ class DataAnalysis
     void correlationAnalysis();
 
 public:
-    DataAnalysis(QString pics, QString logPath);
-    DataAnalysis(QDir pics, QString logPath);
+    DataAnalysis(QString pics, QString logPath, QObject* parent);
+    DataAnalysis(QDir pics, QString logPath, QObject *parent);
     void run();
     alglib::real_1d_array crossCorr() const;
     QVector<double> analizedCrossCorelation() const;

@@ -1,13 +1,15 @@
 #include "DataSetAnalysis.h"
 
- DataAnalysis::DataAnalysis(QString pics, QString logPath):
-    m_parser(logPath)
+ DataAnalysis::DataAnalysis(QString pics, QString logPath, QObject* parent):
+     QObject(parent),
+     m_parser(logPath, this)
 {
     createFileSet(pics);
  }
 
- DataAnalysis::DataAnalysis(QDir pics, QString logPath):
-     m_parser(logPath)
+ DataAnalysis::DataAnalysis(QDir pics, QString logPath, QObject* parent):
+     QObject(parent),
+     m_parser(logPath, this)
  {
      createFileSet(pics);
  }

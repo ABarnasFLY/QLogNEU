@@ -4,14 +4,17 @@
 #include <QFile>
 #include <QTextStream>
 #include <QVector>
+#include <QObject>
 #include "logformat.h"
 
 #define PARSERSTATE ParseMachine::State_line
 
 
 
-class ParseMachine
+class ParseMachine : public QObject
 {
+    Q_OBJECT
+
     QFile m_logFile;
     QTextStream m_logFileStream;
     LogFormat m_format;
@@ -52,7 +55,7 @@ public:
     /// \brief ParseMachine
     /// \param picPath
     /// Parser constructor, picPath is obligatory
-    ParseMachine(QString picPath);
+    ParseMachine(QString picPath , QObject* parent);
 
     bool getEof() const;
     void setEof(bool value);
