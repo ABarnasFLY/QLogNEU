@@ -1,27 +1,32 @@
 #include "DataSetAnalysis.h"
 
- DataAnalysis::DataAnalysis(QString pics, QString logPath, QObject* parent):
-     QObject(parent),
-     m_parser(logPath, this)
+DataAnalysis::DataAnalysis(QString pics, QString logPath, QObject* parent):
+    QObject(parent),
+    m_parser(logPath, this),
+    m_offset_fs(0),
+    m_offset_lg(0)
 {
     createFileSet(pics);
- }
+}
 
- DataAnalysis::DataAnalysis(QDir pics, QString logPath, QObject* parent):
-     QObject(parent),
-     m_parser(logPath, this)
- {
-     createFileSet(pics);
- }
+DataAnalysis::DataAnalysis(QDir pics, QString logPath, QObject* parent):
+    QObject(parent),
+    m_parser(logPath, this),
+    m_offset_fs(0),
+    m_offset_lg(0)
+{
+    createFileSet(pics);
+}
 
- void DataAnalysis::run()
- {
-      m_parser.run();
-      m_vectCamLog = m_parser.getVectCamLog();
-      fillDelays();
-      alglib::corrr1d(m_cDelayLog,m_cDelayLog.length(),m_cDelayPic,m_cDelayPic.length(),m_crossCorr);
-      correlationAnalysis();
- }
+void DataAnalysis::run()
+{
+    m_parser.run();
+    m_vectCamLog = m_parser.getVectCamLog();
+    fillDelays();
+    alglib::corrr1d(m_cDelayLog,m_cDelayLog.length(),m_cDelayPic,m_cDelayPic.length(),m_crossCorr);
+    correlationAnalysis();
+    print();
+}
 
 void DataAnalysis::fillDelays()
 {
@@ -54,6 +59,37 @@ void DataAnalysis::correlationAnalysis()
     }
 }
 
+
+void DataAnalysis::print()
+{
+    m_output.clear();
+    QVector<CamLog_t>::iterator camLog_iterator= m_vectCamLog.begin();
+    fileSet_t::iterator fileset_iterator = m_fileSet.begin();
+    QVector<double>::iterator delayCam_iterator = m_delayPic.begin();
+    QVector<double>::iterator delayLog_iterator = m_delayLog.begin();
+    delayCam_iterator += m_offset_fs;
+    delayLog_iterator += m_offset_lg;
+    fileset_iterator  += m_offset_fs;
+    camLog_iterator   += m_offset_lg;
+    int offset = camLog_iterator->time - fileset_iterator.key();
+    for(; camLog_iterator != m_vectCamLog.end() && fileset_iterator != m_fileSet.end(); camLog_iterator++, fileset_iterator++ )
+    {
+        QStringList line;
+        line.push_back(fileset_iterator.value()); //filename
+        line.push_back(QString::number(camLog_iterator->lat)); // lat
+        line.push_back(QString::number(camLog_iterator->lon)); // lon
+        line.push_back(QString::number(camLog_iterator->alt)); // alt
+        QString timeCam, timeLog;
+        timeUtils::showTime(camLog_iterator->time, &timeLog); //time log
+        line.push_back(timeLog);
+        timeUtils::showTime(fileset_iterator.key() + offset, &timeCam); // time cam
+        line.push_back(timeCam);
+        line.push_back(QString::number(*delayLog_iterator));
+        line.push_back(QString::number(*delayCam_iterator));
+        m_output.push_back(line);
+    }
+}
+
 alglib::real_1d_array DataAnalysis::crossCorr() const
 {
     return m_crossCorr;
@@ -62,6 +98,11 @@ alglib::real_1d_array DataAnalysis::crossCorr() const
 QVector<double> DataAnalysis::analizedCrossCorelation() const
 {
     return m_analizedCrossCorelation;
+}
+
+QVector<QStringList> DataAnalysis::output() const
+{
+    return m_output;
 }
 
 void DataAnalysis::createFileSet(QDir picDir)

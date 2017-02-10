@@ -46,6 +46,8 @@ private slots:
 
     void on_pb_binToLog_convert_clicked();
 
+    void on_pb_run_clicked();
+
 private:
     Ui::MainWindow *ui;
     ProgressWindow *m_progresWindow;

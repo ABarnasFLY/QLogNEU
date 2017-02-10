@@ -4,35 +4,19 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    m_defaultDir(DEFAULT_DIR)
+    m_defaultDir(DEFAULT_DIR),
+    m_analizer(0)
 {
     ui->setupUi(this);
     m_progresWindow = new ProgressWindow(this);
+    m_progresWindow->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
+    m_progresWindow->hide();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-/*void MainWindow::on_pushButton_clicked()
-{
-    //ParseMachine parser;
-    //parser.run();
-    //ui->label->setText(QString::number(parser.getPicDone()));
-    DataAnalysis analizer(QDir("D:/KL/1"), "D:/KL/120.log");
-    analizer.run();
-    ui->label->setText("DONE");
-    QVector<double> crosscorr = analizer.analizedCrossCorelation();
-    QString po = "[ ";
-    for(int i = 0; i < crosscorr.length(); i++)
-    {
-        if (i != 0) po += ',';
-        po += QString::number(crosscorr[i], 'f', 2);
-    }
-    po += ']';
-    ui->textEdit->setText(po);
-}*/
 
 void MainWindow::on_pb_browse_log_clicked()
 {
@@ -101,14 +85,14 @@ void MainWindow::on_pb_binToLog_convert_clicked()
     connect(converter,SIGNAL(setProgressBar(int)),m_progresWindow, SLOT(setProgresBarMaxValue(int)));
     connect(converter,SIGNAL(refreshProgressBar(int)),m_progresWindow, SLOT(updateProgress(int)));
     m_progresWindow->show();
-    this->hide();
+    this->setDisabled(true);
     ConverterThread *cThread = new ConverterThread();
     cThread->setConverter(converter);
     QEventLoop loop;
     connect(cThread, SIGNAL(finished()),&loop,SLOT(quit()));
     cThread->start();
     loop.exec();
-    this->show();
+    this->setEnabled(true);
     m_progresWindow->hide();
     QMessageBox *msg = new QMessageBox(this);
     msg->setText("Conversion done!");
@@ -117,4 +101,12 @@ void MainWindow::on_pb_binToLog_convert_clicked()
     delete converter;
     delete msg;
 
+}
+
+void MainWindow::on_pb_run_clicked()
+{
+    if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_pics->text()),ui->le_log->text(),this);
+    m_analizer->run();
+    QVector<QStringList> vec = m_analizer->output();
+    vec.clear();
 }

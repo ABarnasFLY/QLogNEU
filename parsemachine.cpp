@@ -1,7 +1,7 @@
 #include "parsemachine.h"
 
 ParseMachine::ParseMachine(QString picPath, QObject *parent):
-    QObject(this),
+    QObject(parent),
     m_logFile(picPath),
     picDone(0),
     eof(false)
