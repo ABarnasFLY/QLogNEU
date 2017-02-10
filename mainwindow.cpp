@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_defaultDir(DEFAULT_DIR)
 {
     ui->setupUi(this);
+    m_progresWindow = new ProgressWindow(this);
 }
 
 MainWindow::~MainWindow()
@@ -92,4 +93,22 @@ void MainWindow::on_pb_binToLog_save_clicked()
     QString path = QFileDialog::getSaveFileName(this,QString("Chose path to save text log file"),m_defaultDir,tr("*.log"));
     ui->le_binToLog_save->setText(path);
     m_defaultDir = QFileInfo(path).absolutePath();
+}
+
+void MainWindow::on_pb_binToLog_convert_clicked()
+{
+    QBinToLog *converter = new QBinToLog(ui->le_binToLog_open->text(), ui->le_binToLog_save->text());
+    connect(converter,SIGNAL(setProgressBar(int)),m_progresWindow, SLOT(setProgresBarMaxValue(int)));
+    connect(converter,SIGNAL(refreshProgressBar(int)),m_progresWindow, SLOT(updateProgress(int)));
+    m_progresWindow->show();
+    this->hide();
+    ConverterThread *cThread = new ConverterThread();
+    cThread->setConverter(converter);
+    QEventLoop loop;
+    connect(cThread, SIGNAL(finished()),&loop,SLOT(quit()));
+    cThread->start();
+    loop.exec();
+    this->show();
+    m_progresWindow->hide();
+
 }

@@ -41,7 +41,13 @@ SOURCES += main.cpp\
     alglib/solvers.cpp \
     alglib/specialfunctions.cpp \
     alglib/statistics.cpp \
-    DataSetAnalysis.cpp
+    DataSetAnalysis.cpp \
+    QBinToLog/formatcontainer.cpp \
+    QBinToLog/messagereader.cpp \
+    QBinToLog/messagewriter.cpp \
+    QBinToLog/qbintolog.cpp \
+    progresswindow.cpp \
+    converterthread.cpp
 
 HEADERS  += mainwindow.h \
     parsemachine.h \
@@ -62,6 +68,13 @@ HEADERS  += mainwindow.h \
     alglib/specialfunctions.h \
     alglib/statistics.h \
     alglib/stdafx.h \
-    DataSetAnalysis.h
+    DataSetAnalysis.h \
+    QBinToLog/formatcontainer.h \
+    QBinToLog/messagereader.h \
+    QBinToLog/messagewriter.h \
+    QBinToLog/qbintolog.h \
+    progresswindow.h \
+    converterthread.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    progresswindow.ui

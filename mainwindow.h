@@ -10,7 +10,9 @@
 #include <QFileDialog>
 #include <QString>
 
+#include "progresswindow.h"
 #include "DataSetAnalysis.h"
+#include "converterthread.h"
 
 namespace Ui {
 class MainWindow;
@@ -41,8 +43,12 @@ private slots:
 
     void on_pb_binToLog_save_clicked();
 
+    void on_pb_binToLog_convert_clicked();
+
 private:
     Ui::MainWindow *ui;
+    ProgressWindow *m_progresWindow;
+    DataAnalysis *m_analizer;
 
     QString m_defaultDir;
 };
