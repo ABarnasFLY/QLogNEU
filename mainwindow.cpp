@@ -110,5 +110,11 @@ void MainWindow::on_pb_binToLog_convert_clicked()
     loop.exec();
     this->show();
     m_progresWindow->hide();
+    QMessageBox *msg = new QMessageBox(this);
+    msg->setText("Conversion done!");
+    msg->exec();
+    delete cThread;
+    delete converter;
+    delete msg;
 
 }

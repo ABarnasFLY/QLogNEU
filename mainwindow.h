@@ -9,6 +9,7 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QString>
+#include <QMessageBox>
 
 #include "progresswindow.h"
 #include "DataSetAnalysis.h"
