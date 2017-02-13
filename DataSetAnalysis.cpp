@@ -51,18 +51,23 @@ void DataAnalysis::fillDelays()
     }
 }
 
+
 void DataAnalysis::correlationAnalysis()
 {
     for(int i = 0; i < m_crossCorr.length(); i++)
     {
         if (abs(m_crossCorr.length()/2 - i) > 0.2 * m_crossCorr.length()) m_analizedCrossCorelation.push_back(m_crossCorr[i] / (abs(m_crossCorr.length()/2 - i)));
     }
+
+    QVector<double>::iterator n = std::max_element(m_analizedCrossCorelation.begin(),m_analizedCrossCorelation.end());
+    debug = n - m_analizedCrossCorelation.begin();
 }
 
 
 void DataAnalysis::print()
 {
     m_output.clear();
+    ErrorCount();
     QVector<CamLog_t>::iterator camLog_iterator= m_vectCamLog.begin();
     fileSet_t::iterator fileset_iterator = m_fileSet.begin();
     QVector<double>::iterator delayCam_iterator = m_delayPic.begin();
@@ -72,7 +77,7 @@ void DataAnalysis::print()
     fileset_iterator  += m_offset_fs;
     camLog_iterator   += m_offset_lg;
     int offset = camLog_iterator->time - fileset_iterator.key();
-    for(; camLog_iterator != m_vectCamLog.end() && fileset_iterator != m_fileSet.end(); camLog_iterator++, fileset_iterator++ )
+    for(; camLog_iterator != m_vectCamLog.end() && fileset_iterator != m_fileSet.end(); camLog_iterator++, fileset_iterator++, delayCam_iterator++, delayLog_iterator++ )
     {
         QStringList line;
         line.push_back(fileset_iterator.value()); //filename
@@ -84,8 +89,8 @@ void DataAnalysis::print()
         line.push_back(timeLog);
         timeUtils::showTime(fileset_iterator.key() + offset, &timeCam); // time cam
         line.push_back(timeCam);
-        line.push_back(QString::number(*delayLog_iterator));
-        line.push_back(QString::number(*delayCam_iterator));
+        line.push_back(QString::number(*delayLog_iterator / 1000));
+        line.push_back(QString::number(*delayCam_iterator / 1000));
         m_output.push_back(line);
     }
 }
@@ -103,6 +108,16 @@ QVector<double> DataAnalysis::analizedCrossCorelation() const
 QVector<QStringList> DataAnalysis::output() const
 {
     return m_output;
+}
+
+double DataAnalysis::meanError() const
+{
+    return m_meanError;
+}
+
+int DataAnalysis::outliersCount() const
+{
+    return m_outliersCount;
 }
 
 void DataAnalysis::createFileSet(QDir picDir)
@@ -140,4 +155,29 @@ void DataAnalysis::createFileSet(QString filePath)
             m_fileSet.insert(SList[1].toLong(),SList[0]);
         }
     }
+}
+
+void DataAnalysis::ErrorCount()
+{
+    QVector<CamLog_t>::iterator itVectCamLog = m_vectCamLog.begin();
+    fileSet_t::iterator itFileSet = m_fileSet.begin();
+    itVectCamLog += m_offset_fs;
+    itFileSet += m_offset_lg;
+    double sum = 0;
+    m_outliersCount = 0;
+    int iterations = 0;
+    double offset = itVectCamLog->time - itFileSet.key();
+
+    for(; itVectCamLog != m_vectCamLog.end() && itFileSet != m_fileSet.end(); itVectCamLog++, itFileSet++)
+    {
+        sum += abs(itVectCamLog->time - itFileSet.key() - offset);
+        if(abs(itVectCamLog->time - itFileSet.key() - offset) > 1400)
+        {
+            m_outliersCount++;
+        }
+        iterations++;
+    }
+
+    m_meanError = sum / (double)iterations ;
+    m_meanError = m_meanError / 1000.0;
 }
