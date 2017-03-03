@@ -48,6 +48,8 @@ private slots:
 
     void on_pb_run_clicked();
 
+    void on_pb_rin_run_clicked();
+
 private:
     Ui::MainWindow *ui;
     ProgressWindow *m_progresWindow;
