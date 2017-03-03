@@ -47,7 +47,12 @@ SOURCES += main.cpp\
     QBinToLog/messagewriter.cpp \
     QBinToLog/qbintolog.cpp \
     progresswindow.cpp \
-    converterthread.cpp
+    converterthread.cpp \
+    parserrtk.cpp \
+    rinexparser.cpp \
+    rtkpostprocessparser.cpp \
+    rtklogparser.cpp \
+    location.cpp
 
 HEADERS  += mainwindow.h \
     parsemachine.h \
@@ -74,7 +79,12 @@ HEADERS  += mainwindow.h \
     QBinToLog/messagewriter.h \
     QBinToLog/qbintolog.h \
     progresswindow.h \
-    converterthread.h
+    converterthread.h \
+    parserrtk.h \
+    rinexparser.h \
+    rtkpostprocessparser.h \
+    rtklogparser.h \
+    location.h
 
 FORMS    += mainwindow.ui \
     progresswindow.ui

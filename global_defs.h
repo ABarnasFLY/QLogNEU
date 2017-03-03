@@ -19,6 +19,7 @@ typedef struct {
     float           yaw;
     float			CoG;		//GPS Course over Ground
     float			GS;			//GPS Ground Speed [m/s]
+    int             Q;
 } CamLog_t;
 
 typedef struct {

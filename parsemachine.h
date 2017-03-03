@@ -15,14 +15,12 @@ class ParseMachine : public QObject
 {
     Q_OBJECT
 
-    QFile m_logFile;
-    QTextStream m_logFileStream;
+
     LogFormat m_format;
     NearLogs_t m_nearLogs;
-    QVector<CamLog_t> m_vectCamLog;
     int picDone;
     bool eof;
-
+    QTextStream m_logFileStream;
     enum State_line
     {
         INIT,
@@ -50,12 +48,15 @@ class ParseMachine : public QObject
     /// \brief print
     /// Print some data from vector for debug purpose
     void print();
+protected:
+    QFile m_logFile;
+    QVector<CamLog_t> m_vectCamLog;
 public:
     ///////////////////////////////
     /// \brief ParseMachine
     /// \param picPath
     /// Parser constructor, picPath is obligatory
-    ParseMachine(QString picPath , QObject* parent);
+    ParseMachine(QString logPath , QObject* parent);
 
     bool getEof() const;
     void setEof(bool value);
@@ -63,7 +64,7 @@ public:
     ///////////////////////////////
     /// \brief run
     /// Parse log and create vector of pics data
-    void run();
+    virtual void run();
     int getPicDone() const;
 
     QVector<CamLog_t> getVectCamLog() const;

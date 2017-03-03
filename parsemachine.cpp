@@ -1,8 +1,8 @@
 #include "parsemachine.h"
 
-ParseMachine::ParseMachine(QString picPath, QObject *parent):
+ParseMachine::ParseMachine(QString logPath, QObject *parent):
     QObject(parent),
-    m_logFile(picPath),
+    m_logFile(logPath),
     picDone(0),
     eof(false)
 {
@@ -41,6 +41,7 @@ void ParseMachine::run()
             break;
         }
     }
+    m_logFile.close();
 }
 
 PARSERSTATE ParseMachine::on_Init()

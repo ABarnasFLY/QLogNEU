@@ -2,26 +2,47 @@
 
 DataAnalysis::DataAnalysis(QString pics, QString logPath, QObject* parent):
     QObject(parent),
-    m_parser(logPath, this),
     m_offset_fs(0),
     m_offset_lg(0)
 {
+    m_parser = new ParseMachine(logPath, this);
     createFileSet(pics);
 }
 
 DataAnalysis::DataAnalysis(QDir pics, QString logPath, QObject* parent):
     QObject(parent),
-    m_parser(logPath, this),
     m_offset_fs(0),
     m_offset_lg(0)
 {
     createFileSet(pics);
+    m_parser = new ParseMachine(logPath, this);
 }
+
+DataAnalysis::DataAnalysis(QString pics, QString logPath, QString rinexPath, QString ppRTKpath, QObject* parent):
+    QObject(parent),
+    m_offset_fs(0),
+    m_offset_lg(0)
+{
+    m_parser = new ParserRTK(logPath,rinexPath, ppRTKpath, parent);
+    createFileSet(pics);
+}
+
+DataAnalysis::DataAnalysis(QDir pics, QString logPath, QString rinexPath, QString ppRTKpath, QObject* parent):
+    QObject(parent),
+    m_offset_fs(0),
+    m_offset_lg(0)
+{
+    createFileSet(pics);
+    m_parser = new ParserRTK(logPath,rinexPath, ppRTKpath, parent);
+}
+
+
+
 
 void DataAnalysis::run()
 {
-    m_parser.run();
-    m_vectCamLog = m_parser.getVectCamLog();
+    m_parser->run();
+    m_vectCamLog = m_parser->getVectCamLog();
     fillDelays();
     alglib::corrr1d(m_cDelayLog,m_cDelayLog.length(),m_cDelayPic,m_cDelayPic.length(),m_crossCorr);
     correlationAnalysis();
@@ -180,4 +201,21 @@ void DataAnalysis::ErrorCount()
 
     m_meanError = sum / (double)iterations ;
     m_meanError = m_meanError / 1000.0;
+}
+
+void DataAnalysis::ApplyDelay()
+{
+    QVector<CamLog_t>::iterator it_v = m_vectCamLog.end();
+
+    // loop over all VectorCamLog elements to apply the GPS & Camera delay corrections
+    for (;	it_v != m_vectCamLog.end(); ++it_v)
+    {
+        Loc tempLoc;
+        //convert to fixed decimal to ensure compatibility with location.cpp
+        tempLoc.lat = 1.0e7 * (*it_v).lat;
+        tempLoc.lon = 1.0e7 * (*it_v).lon;
+        Location::loc_update(tempLoc, (*it_v).CoG , (*it_v).GS * DELAY_TRIGER_TO_PHOTO);
+        (*it_v).lat = (double)(1.0e-7 * tempLoc.lat);
+        (*it_v).lon = (double)(1.0e-7 * tempLoc.lon);
+    }
 }
