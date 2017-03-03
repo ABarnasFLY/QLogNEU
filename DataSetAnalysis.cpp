@@ -43,6 +43,7 @@ void DataAnalysis::run()
 {
     m_parser->run();
     m_vectCamLog = m_parser->getVectCamLog();
+    if(dynamic_cast<ParserRTK*>(m_parser) == nullptr) ApplyDelay();
     fillDelays();
     alglib::corrr1d(m_cDelayLog,m_cDelayLog.length(),m_cDelayPic,m_cDelayPic.length(),m_crossCorr);
     correlationAnalysis();
@@ -101,17 +102,17 @@ void DataAnalysis::print()
     for(; camLog_iterator != m_vectCamLog.end() && fileset_iterator != m_fileSet.end(); camLog_iterator++, fileset_iterator++, delayCam_iterator++, delayLog_iterator++ )
     {
         QStringList line;
-        line.push_back(fileset_iterator.value()); //filename
-        line.push_back(QString::number(camLog_iterator->lat)); // lat
-        line.push_back(QString::number(camLog_iterator->lon)); // lon
-        line.push_back(QString::number(camLog_iterator->alt)); // alt
+        line.push_back(QFileInfo(fileset_iterator.value()).fileName()); //filename
+        line.push_back(QString::number(camLog_iterator->lat,'f',9)); // lat
+        line.push_back(QString::number(camLog_iterator->lon,'f',9)); // lon
+        line.push_back(QString::number(camLog_iterator->alt,'f',9)); // alt
         QString timeCam, timeLog;
         timeUtils::showTime(camLog_iterator->time, &timeLog); //time log
         line.push_back(timeLog);
         timeUtils::showTime(fileset_iterator.key() + offset, &timeCam); // time cam
         line.push_back(timeCam);
-        line.push_back(QString::number(*delayLog_iterator / 1000));
-        line.push_back(QString::number(*delayCam_iterator / 1000));
+        line.push_back(QString::number(*delayLog_iterator / 1000,'f',9));
+        line.push_back(QString::number(*delayCam_iterator / 1000,'f',9));
         m_output.push_back(line);
     }
 }
@@ -139,6 +140,16 @@ double DataAnalysis::meanError() const
 int DataAnalysis::outliersCount() const
 {
     return m_outliersCount;
+}
+
+QVector<double> DataAnalysis::delayPic() const
+{
+    return m_delayPic;
+}
+
+QVector<double> DataAnalysis::delayLog() const
+{
+    return m_delayLog;
 }
 
 void DataAnalysis::createFileSet(QDir picDir)

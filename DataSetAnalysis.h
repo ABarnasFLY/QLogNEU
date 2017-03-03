@@ -50,6 +50,8 @@ public:
     int outliersCount() const;
     DataAnalysis(QDir pics, QString logPath, QString rinexPath, QString ppRTKpath, QObject *parent);
     DataAnalysis(QString pics, QString logPath, QString rinexPath, QString ppRTKpath, QObject *parent);
+    QVector<double> delayPic() const;
+    QVector<double> delayLog() const;
 };
 
 #endif // DATAANALYSIS_H
