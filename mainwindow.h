@@ -50,10 +50,14 @@ private slots:
 
     void on_pb_rin_run_clicked();
 
+    void on_pb_reset_clicked();
+
 private:
     Ui::MainWindow *ui;
     ProgressWindow *m_progresWindow;
     DataAnalysis *m_analizer;
+    void resizeEvent(QResizeEvent *event);
+    void showResult();
 
     QString m_defaultDir;
 };

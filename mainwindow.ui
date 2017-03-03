@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>484</width>
+    <width>562</width>
     <height>351</height>
    </rect>
   </property>
@@ -15,13 +15,6 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="2">
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="label_12">
       <property name="font">
@@ -34,10 +27,17 @@
       </property>
      </widget>
     </item>
+    <item row="1" column="2">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
     <item row="1" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_paths_no_rtk">
        <attribute name="title">
@@ -209,7 +209,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="tab_binToLog">
        <attribute name="title">
         <string>Convert binary to text log </string>
        </attribute>
@@ -274,6 +274,73 @@
         </item>
         <item row="4" column="0" colspan="3">
          <widget class="QLineEdit" name="le_binToLog_save"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_Results">
+       <attribute name="title">
+        <string>Results</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QTableWidget" name="table_result">
+          <column>
+           <property name="text">
+            <string>Filename</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>GPS time</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Log delta</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Cam delta</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Difference</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="pb_reset">
+            <property name="text">
+             <string>Process new files</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_confirmExclusions">
+            <property name="text">
+             <string>Apply changes</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
