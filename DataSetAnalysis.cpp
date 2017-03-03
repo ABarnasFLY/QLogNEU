@@ -43,7 +43,10 @@ void DataAnalysis::run()
 {
     m_parser->run();
     m_vectCamLog = m_parser->getVectCamLog();
-    if(dynamic_cast<ParserRTK*>(m_parser) == nullptr) ApplyDelay();
+    if(dynamic_cast<ParserRTK*>(m_parser) == nullptr)
+    {
+        ApplyDelay();
+    }
     fillDelays();
     alglib::corrr1d(m_cDelayLog,m_cDelayLog.length(),m_cDelayPic,m_cDelayPic.length(),m_crossCorr);
     correlationAnalysis();
@@ -216,7 +219,7 @@ void DataAnalysis::ErrorCount()
 
 void DataAnalysis::ApplyDelay()
 {
-    QVector<CamLog_t>::iterator it_v = m_vectCamLog.end();
+    QVector<CamLog_t>::iterator it_v = m_vectCamLog.begin();
 
     // loop over all VectorCamLog elements to apply the GPS & Camera delay corrections
     for (;	it_v != m_vectCamLog.end(); ++it_v)

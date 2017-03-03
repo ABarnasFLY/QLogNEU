@@ -117,10 +117,10 @@ void MainWindow::on_pb_rin_run_clicked()
     if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
     m_analizer->run();
     QVector<QStringList> vec = m_analizer->output();
-    double error = m_analizer->meanError();
+/*    double error = m_analizer->meanError();
     int outl = m_analizer->outliersCount();
     int debug = m_analizer->debug;
-    vec.clear();
+    vec.clear();*/
 }
 
 void MainWindow::showResult()
@@ -145,7 +145,6 @@ void MainWindow::showResult()
                 ui->table_result->setItem(i,3,new QTableWidgetItem(QString::number(vectorCam[i]/1000,'f',1)));
                 ui->table_result->setItem(i,4,new QTableWidgetItem(QString::number(fabs(vectorLog[i] - vectorCam[i])/1000,'f',1)));
             }
-           // ui->table_result->setItem(i,5,new QTableWidgetItem(vectorOutput[i][j]));
         }
 
     }

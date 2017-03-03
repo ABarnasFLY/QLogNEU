@@ -1,7 +1,7 @@
 #ifndef DATAANALYSIS_H
 #define DATAANALYSIS_H
 
-#define DELAY_TRIGER_TO_PHOTO 200
+#define DELAY_TRIGER_TO_PHOTO 0.2
 #include "global_defs.h"
 #include "timeutils.h"
 #include "parsemachine.h"
