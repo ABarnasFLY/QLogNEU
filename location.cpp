@@ -20,6 +20,8 @@
 void
 Location::loc_update(Loc &loc, float bearing, float distance)
 {
+    bearing = bearing / 10e5;
+    if(bearing < 0) bearing = 0;
     float ofs_north = cosf(radians(bearing))*distance;
     float ofs_east  = sinf(radians(bearing))*distance;
     loc_offset(loc, ofs_north, ofs_east);
