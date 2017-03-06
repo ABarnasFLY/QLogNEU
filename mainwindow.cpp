@@ -117,10 +117,30 @@ void MainWindow::on_pb_rin_run_clicked()
     if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
     m_analizer->run();
     QVector<QStringList> vec = m_analizer->output();
-/*    double error = m_analizer->meanError();
+    /*    double error = m_analizer->meanError();
     int outl = m_analizer->outliersCount();
     int debug = m_analizer->debug;
     vec.clear();*/
+}
+
+void MainWindow::refreshResult()
+{
+    QVector<QStringList> vectorOutput = m_analizer->output();
+    QVector<double> vectorLog = m_analizer->delayLog();
+    QVector<double> vectorCam = m_analizer->delayPic();
+    ui->table_result->clear();
+    ui->table_result->setRowCount(vectorOutput.size());
+    for(int i = 0; i < ui->table_result->rowCount(); i++)
+    {
+        ui->table_result->setItem(i,0,new QTableWidgetItem(vectorOutput[i][0]));
+        ui->table_result->setItem(i,1, new QTableWidgetItem(vectorOutput[i][4]));
+        if(i < vectorCam.size() && i < vectorLog.size())
+        {
+            ui->table_result->setItem(i,2,new QTableWidgetItem(QString::number(vectorLog[i]/1000,'f',1)));
+            ui->table_result->setItem(i,3,new QTableWidgetItem(QString::number(vectorCam[i]/1000,'f',1)));
+            ui->table_result->setItem(i,4,new QTableWidgetItem(QString::number(fabs(vectorLog[i] - vectorCam[i])/1000,'f',1)));
+        }
+    }
 }
 
 void MainWindow::showResult()
@@ -170,5 +190,15 @@ void MainWindow::on_pb_reset_clicked()
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-     ui->table_result->horizontalHeader()->resizeSections(QHeaderView::Stretch);
+    ui->table_result->horizontalHeader()->resizeSections(QHeaderView::Stretch);
+}
+
+void MainWindow::on_pb_confirmExclusions_clicked()
+{
+    QVector<int> l;
+    QVector<int> p;
+    l.push_back(14);
+    l.push_back(10);
+    m_analizer->Modify(p,l);
+    refreshResult();
 }

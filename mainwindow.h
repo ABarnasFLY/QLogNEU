@@ -52,6 +52,8 @@ private slots:
 
     void on_pb_reset_clicked();
 
+    void on_pb_confirmExclusions_clicked();
+
 private:
     Ui::MainWindow *ui;
     ProgressWindow *m_progresWindow;
@@ -60,6 +62,7 @@ private:
     void showResult();
 
     QString m_defaultDir;
+    void refreshResult();
 };
 
 #endif // MAINWINDOW_H
