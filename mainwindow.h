@@ -56,6 +56,8 @@ private slots:
 
     void on_table_result_cellClicked(int row, int column);
 
+    void on_pb_undo_clicked();
+
 private:
     Ui::MainWindow *ui;
     ProgressWindow *m_progresWindow;

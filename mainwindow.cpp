@@ -117,11 +117,6 @@ void MainWindow::on_pb_rin_run_clicked()
 {
     if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
     m_analizer->run();
-    QVector<QStringList> vec = m_analizer->output();
-    /*    double error = m_analizer->meanError();
-    int outl = m_analizer->outliersCount();
-    int debug = m_analizer->debug;
-    vec.clear();*/
 }
 
 void MainWindow::refreshResult()
@@ -228,4 +223,12 @@ void MainWindow::on_table_result_cellClicked(int row, int column)
        m_analizer->skipCam(row);
        refreshResult();
     }
+}
+
+
+
+void MainWindow::on_pb_undo_clicked()
+{
+    m_analizer->undo();
+    refreshResult();
 }
