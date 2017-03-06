@@ -54,6 +54,8 @@ public:
     QVector<double> delayPic() const;
     QVector<double> delayLog() const;
     void Modify(QVector<int> picExclusions, QVector<int> logExclusion);
+    void skipCam(int n);
+    void skipPic(int n);
 };
 
 #endif // DATAANALYSIS_H

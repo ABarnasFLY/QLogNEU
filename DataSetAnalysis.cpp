@@ -36,6 +36,20 @@ DataAnalysis::DataAnalysis(QDir pics, QString logPath, QString rinexPath, QStrin
     m_parser = new ParserRTK(logPath,rinexPath, ppRTKpath, parent);
 }
 
+void DataAnalysis::skipCam(int n)
+{
+    m_vectCamLog.remove(n);
+    fillDelays();
+    print();
+}
+
+void DataAnalysis::skipPic(int n)
+{
+    m_fileSet.remove((m_fileSet.begin() + n).key());
+    fillDelays();
+    print();
+}
+
 void DataAnalysis::Modify(QVector<int> picExclusion, QVector<int> logExclusion)
 {
     for(int i = 0; i < logExclusion.size(); i++)
@@ -47,9 +61,6 @@ void DataAnalysis::Modify(QVector<int> picExclusion, QVector<int> logExclusion)
         m_fileSet.remove((m_fileSet.begin() + picExclusion[i]).key());
     }
     fillDelays();
-    fillDelays();
-    alglib::corrr1d(m_cDelayLog,m_cDelayLog.length(),m_cDelayPic,m_cDelayPic.length(),m_crossCorr);
-    correlationAnalysis();
     print();
 }
 
