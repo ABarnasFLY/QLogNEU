@@ -1,9 +1,11 @@
 #include "DataSetAnalysis.h"
+#include <QDebug>
 
 DataAnalysis::DataAnalysis(QString pics, QString logPath, QObject* parent):
     QObject(parent),
     m_offset_fs(0),
-    m_offset_lg(0)
+    m_offset_lg(0),
+    m_canBeUndo(false)
 {
     m_parser = new ParseMachine(logPath, this);
     createFileSet(pics);
@@ -38,16 +40,47 @@ DataAnalysis::DataAnalysis(QDir pics, QString logPath, QString rinexPath, QStrin
 
 void DataAnalysis::skipCam(int n)
 {
+    m_skipedLogs.push_back(m_vectCamLog[n]);
+    m_skipedLogsPos.push_back(n);
+    m_camOrLogSkiped.push_back(LOG);
     m_vectCamLog.remove(n);
+    fillDelays();
+    print();
+    m_canBeUndo = true;
+}
+
+void DataAnalysis::undo()
+{
+    if(m_canBeUndo)
+    {
+        if(m_camOrLogSkiped.size() == 1) m_canBeUndo = false;
+        if(m_camOrLogSkiped.last() == LOG)
+        {
+            m_vectCamLog.insert(m_skipedLogsPos.last(),m_skipedLogs.last());
+            m_skipedLogsPos.removeLast();
+            m_skipedLogs.removeLast();
+        }
+        else
+        {
+            m_fileSet.insert(m_skipedKeys.last(), m_skipedFilename.last());
+            m_skipedFilename.removeLast();
+            m_skipedKeys.removeLast();
+        }
+        m_camOrLogSkiped.removeLast();
+    }
     fillDelays();
     print();
 }
 
 void DataAnalysis::skipPic(int n)
 {
+    m_skipedFilename.push_back((m_fileSet.begin()+n).value());
+    m_skipedKeys.push_back((m_fileSet.begin() + n).key());
+    m_camOrLogSkiped.push_back(PIC);
     m_fileSet.remove((m_fileSet.begin() + n).key());
     fillDelays();
     print();
+    m_canBeUndo = true;
 }
 
 void DataAnalysis::Modify(QVector<int> picExclusion, QVector<int> logExclusion)
@@ -129,9 +162,7 @@ void DataAnalysis::correlationAnalysis()
     }
     if (m_offset_lg != 0)
     {
-        int i = m_offset_lg;
-        m_vectCamLog.remove(0,m_offset_lg);
-        i--;
+        m_vectCamLog.remove(0,m_offset_lg+1);
     }
 
 }
@@ -145,10 +176,6 @@ void DataAnalysis::print()
     fileSet_t::iterator fileset_iterator = m_fileSet.begin();
     QVector<double>::iterator delayCam_iterator = m_delayPic.begin();
     QVector<double>::iterator delayLog_iterator = m_delayLog.begin();
-/*    delayCam_iterator += m_offset_fs;
-    delayLog_iterator += m_offset_lg;
-    fileset_iterator  += m_offset_fs;
-    camLog_iterator   += m_offset_lg;*/
     int offset = camLog_iterator->time - fileset_iterator.key();
     for(; camLog_iterator != m_vectCamLog.end() && fileset_iterator != m_fileSet.end(); camLog_iterator++, fileset_iterator++, delayCam_iterator++, delayLog_iterator++ )
     {

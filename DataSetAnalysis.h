@@ -12,12 +12,23 @@
 
 class DataAnalysis : public QObject
 {
+    enum lastSkiped{
+        PIC = 0,
+        LOG
+    };
+
     Q_OBJECT
     fileSet_t m_fileSet;
     fileSet_t m_originalFileSet;
+    QVector<QString> m_skipedFilename;
+    QVector<long> m_skipedKeys;
+    QVector<int> m_skipedLogsPos;
+    QVector<lastSkiped> m_camOrLogSkiped;
     ParseMachine *m_parser;
     QVector<CamLog_t> m_vectCamLog;
     QVector<CamLog_t> m_originalCamLog;
+    QVector<CamLog_t> m_skipedLogs;
+    bool m_canBeUndo;
     alglib::real_1d_array m_cDelayPic, m_cDelayLog, m_crossCorr;
     double m_meanError;
     int m_outliersCount;
@@ -56,6 +67,7 @@ public:
     void Modify(QVector<int> picExclusions, QVector<int> logExclusion);
     void skipCam(int n);
     void skipPic(int n);
+    void undo();
 };
 
 #endif // DATAANALYSIS_H
