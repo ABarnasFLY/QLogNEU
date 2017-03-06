@@ -54,12 +54,17 @@ private slots:
 
     void on_pb_confirmExclusions_clicked();
 
+    void on_table_result_cellClicked(int row, int column);
+
 private:
     Ui::MainWindow *ui;
     ProgressWindow *m_progresWindow;
     DataAnalysis *m_analizer;
     void resizeEvent(QResizeEvent *event);
     void showResult();
+
+    QVector<QPushButton*> m_skipCam;
+    QVector<QPushButton*> m_skipPic;
 
     QString m_defaultDir;
     void refreshResult();

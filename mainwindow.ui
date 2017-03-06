@@ -37,7 +37,7 @@
     <item row="1" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_paths_no_rtk">
        <attribute name="title">
@@ -283,6 +283,51 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="label_outlier">
+            <property name="text">
+             <string>Outlier count:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_outCount">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_mean">
+            <property name="text">
+             <string>Mean difference:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_meanValue">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
          <widget class="QTableWidget" name="table_result">
           <column>
            <property name="text">
@@ -307,6 +352,16 @@
           <column>
            <property name="text">
             <string>Difference</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Pic</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Log</string>
            </property>
           </column>
          </widget>

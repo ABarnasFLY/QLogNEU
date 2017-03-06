@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_progresWindow->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
     m_progresWindow->hide();
     ui->tabWidget->removeTab(3);
+    ui->table_result->setEditTriggers(QTableWidget::NoEditTriggers);
 }
 
 MainWindow::~MainWindow()
@@ -125,9 +126,13 @@ void MainWindow::on_pb_rin_run_clicked()
 
 void MainWindow::refreshResult()
 {
+    ui->label_outCount->setText(QString::number(m_analizer->outliersCount()));
+    ui->label_meanValue->setText(QString::number(m_analizer->meanError()));
     QVector<QStringList> vectorOutput = m_analizer->output();
     QVector<double> vectorLog = m_analizer->delayLog();
     QVector<double> vectorCam = m_analizer->delayPic();
+    m_skipCam.clear();
+    m_skipPic.clear();
     ui->table_result->clear();
     ui->table_result->setRowCount(vectorOutput.size());
     for(int i = 0; i < ui->table_result->rowCount(); i++)
@@ -139,16 +144,22 @@ void MainWindow::refreshResult()
             ui->table_result->setItem(i,2,new QTableWidgetItem(QString::number(vectorLog[i]/1000,'f',1)));
             ui->table_result->setItem(i,3,new QTableWidgetItem(QString::number(vectorCam[i]/1000,'f',1)));
             ui->table_result->setItem(i,4,new QTableWidgetItem(QString::number(fabs(vectorLog[i] - vectorCam[i])/1000,'f',1)));
+            ui->table_result->setItem(i,5,new QTableWidgetItem(QString("skip")));
+            ui->table_result->setItem(i,6,new QTableWidgetItem(QString("skip")));
         }
     }
 }
 
 void MainWindow::showResult()
 {
+    ui->label_outCount->setText(QString::number(m_analizer->outliersCount()));
+    ui->label_meanValue->setText(QString::number(m_analizer->meanError()));
     ui->tabWidget->removeTab(0);
     ui->tabWidget->removeTab(0);
     ui->tabWidget->removeTab(0);
     ui->tabWidget->addTab(ui->tab_Results,"Result");
+    m_skipCam.clear();
+    m_skipPic.clear();
     if(m_analizer)
     {
         QVector<QStringList> vectorOutput = m_analizer->output();
@@ -164,6 +175,8 @@ void MainWindow::showResult()
                 ui->table_result->setItem(i,2,new QTableWidgetItem(QString::number(vectorLog[i]/1000,'f',1)));
                 ui->table_result->setItem(i,3,new QTableWidgetItem(QString::number(vectorCam[i]/1000,'f',1)));
                 ui->table_result->setItem(i,4,new QTableWidgetItem(QString::number(fabs(vectorLog[i] - vectorCam[i])/1000,'f',1)));
+                ui->table_result->setItem(i,5,new QTableWidgetItem(QString("skip")));
+                ui->table_result->setItem(i,6,new QTableWidgetItem(QString("skip")));
             }
         }
 
@@ -201,4 +214,18 @@ void MainWindow::on_pb_confirmExclusions_clicked()
     l.push_back(10);
     m_analizer->Modify(p,l);
     refreshResult();
+}
+
+void MainWindow::on_table_result_cellClicked(int row, int column)
+{
+    if(column == 5)
+    {
+       m_analizer->skipPic(row);
+       refreshResult();
+    }
+    if(column == 6)
+    {
+       m_analizer->skipCam(row);
+       refreshResult();
+    }
 }
