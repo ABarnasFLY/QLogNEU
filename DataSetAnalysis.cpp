@@ -36,7 +36,22 @@ DataAnalysis::DataAnalysis(QDir pics, QString logPath, QString rinexPath, QStrin
     m_parser = new ParserRTK(logPath,rinexPath, ppRTKpath, parent);
 }
 
-
+void DataAnalysis::Modify(QVector<int> picExclusion, QVector<int> logExclusion)
+{
+    for(int i = 0; i < logExclusion.size(); i++)
+    {
+        m_vectCamLog.remove(logExclusion[i]);
+    }
+    for(int i = 0; i < picExclusion.size(); i++)
+    {
+        m_fileSet.remove((m_fileSet.begin() + picExclusion[i]).key());
+    }
+    fillDelays();
+    fillDelays();
+    alglib::corrr1d(m_cDelayLog,m_cDelayLog.length(),m_cDelayPic,m_cDelayPic.length(),m_crossCorr);
+    correlationAnalysis();
+    print();
+}
 
 
 void DataAnalysis::run()
@@ -49,12 +64,17 @@ void DataAnalysis::run()
     }
     fillDelays();
     alglib::corrr1d(m_cDelayLog,m_cDelayLog.length(),m_cDelayPic,m_cDelayPic.length(),m_crossCorr);
+    m_originalCamLog = m_vectCamLog;
+    m_originalFileSet = m_fileSet;
     correlationAnalysis();
+    fillDelays();
     print();
 }
 
 void DataAnalysis::fillDelays()
 {
+    m_delayLog.clear();
+    m_delayPic.clear();
     m_cDelayLog.setlength(m_vectCamLog.length()-1);
     m_cDelayPic.setlength(m_fileSet.size()-1);
     QVector<CamLog_t>::iterator itVectCamLog = m_vectCamLog.begin();
@@ -85,7 +105,24 @@ void DataAnalysis::correlationAnalysis()
     }
 
     QVector<double>::iterator n = std::max_element(m_analizedCrossCorelation.begin(),m_analizedCrossCorelation.end());
-    debug = n - m_analizedCrossCorelation.begin();
+    if(n < m_analizedCrossCorelation.begin() + m_analizedCrossCorelation.size()/2) m_offset_lg = n - m_analizedCrossCorelation.begin();
+    else m_offset_fs = m_analizedCrossCorelation.end() - n;
+    if (m_offset_fs != 0)
+    {
+        int i = m_offset_fs;
+        while (i != 0)
+        {
+            m_fileSet.remove(m_fileSet.begin().key());
+            i--;
+        }
+    }
+    if (m_offset_lg != 0)
+    {
+        int i = m_offset_lg;
+        m_vectCamLog.remove(0,m_offset_lg);
+        i--;
+    }
+
 }
 
 
@@ -97,10 +134,10 @@ void DataAnalysis::print()
     fileSet_t::iterator fileset_iterator = m_fileSet.begin();
     QVector<double>::iterator delayCam_iterator = m_delayPic.begin();
     QVector<double>::iterator delayLog_iterator = m_delayLog.begin();
-    delayCam_iterator += m_offset_fs;
+/*    delayCam_iterator += m_offset_fs;
     delayLog_iterator += m_offset_lg;
     fileset_iterator  += m_offset_fs;
-    camLog_iterator   += m_offset_lg;
+    camLog_iterator   += m_offset_lg;*/
     int offset = camLog_iterator->time - fileset_iterator.key();
     for(; camLog_iterator != m_vectCamLog.end() && fileset_iterator != m_fileSet.end(); camLog_iterator++, fileset_iterator++, delayCam_iterator++, delayLog_iterator++ )
     {

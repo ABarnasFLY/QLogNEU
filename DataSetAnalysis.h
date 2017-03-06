@@ -14,8 +14,10 @@ class DataAnalysis : public QObject
 {
     Q_OBJECT
     fileSet_t m_fileSet;
+    fileSet_t m_originalFileSet;
     ParseMachine *m_parser;
     QVector<CamLog_t> m_vectCamLog;
+    QVector<CamLog_t> m_originalCamLog;
     alglib::real_1d_array m_cDelayPic, m_cDelayLog, m_crossCorr;
     double m_meanError;
     int m_outliersCount;
@@ -39,7 +41,6 @@ class DataAnalysis : public QObject
     void ErrorCount();
     void ApplyDelay();
 public:
-    int debug;
     DataAnalysis(QString pics, QString logPath, QObject* parent);
     DataAnalysis(QDir pics, QString logPath, QObject *parent);
     void run();
@@ -52,6 +53,7 @@ public:
     DataAnalysis(QString pics, QString logPath, QString rinexPath, QString ppRTKpath, QObject *parent);
     QVector<double> delayPic() const;
     QVector<double> delayLog() const;
+    void Modify(QVector<int> picExclusions, QVector<int> logExclusion);
 };
 
 #endif // DATAANALYSIS_H
