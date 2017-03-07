@@ -162,7 +162,7 @@ void DataAnalysis::correlationAnalysis()
     }
     if (m_offset_lg != 0)
     {
-        m_vectCamLog.remove(0,m_offset_lg+1);
+        m_vectCamLog.remove(0,m_offset_lg);
     }
 
 }
@@ -271,8 +271,6 @@ void DataAnalysis::ErrorCount()
 {
     QVector<CamLog_t>::iterator itVectCamLog = m_vectCamLog.begin();
     fileSet_t::iterator itFileSet = m_fileSet.begin();
-    itVectCamLog += m_offset_fs;
-    itFileSet += m_offset_lg;
     double sum = 0;
     m_outliersCount = 0;
     int iterations = 0;

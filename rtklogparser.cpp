@@ -1,4 +1,5 @@
 #include "rtklogparser.h"
+#include <QDebug>
 RTKLogParser::RTKLogParser(QFile *log, QVector<CamLog_t> *vec):
     m_log(log),
     m_vectCamLog(vec),
@@ -121,7 +122,7 @@ PSTATE RTKLogParser::on_Synchronization()
 
 PSTATE RTKLogParser::on_Conversion()
 {
-    m_currentTimeMark = m_it_vectCamLog->time + m_timeDifference;
+    m_currentTimeMark = m_it_vectCamLog->time - m_timeDifference;
     if(m_it_vectCamLog != m_vectCamLog->end()) m_it_vectCamLog++;
     else return DONE;
 

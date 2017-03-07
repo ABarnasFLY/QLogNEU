@@ -10,7 +10,7 @@ class RTKLogParser
     QFile *m_log;
     QVector<CamLog_t> *m_vectCamLog;
     QTextStream m_logStream;
-    unsigned long m_timeDifference;
+    long m_timeDifference;
     unsigned long m_currentTimeMark;
     enum State
     {
