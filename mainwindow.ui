@@ -15,6 +15,13 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="2">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="label_12">
       <property name="font">
@@ -27,13 +34,6 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="2">
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
@@ -41,7 +41,7 @@
       </property>
       <widget class="QWidget" name="tab_paths_no_rtk">
        <attribute name="title">
-        <string>Log from UAV only</string>
+        <string>Parser</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="2" column="0">
@@ -109,7 +109,7 @@
       </widget>
       <widget class="QWidget" name="tab_paths_rtk">
        <attribute name="title">
-        <string>RTK on board</string>
+        <string>Parser RTK</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="8" column="2">
@@ -211,7 +211,7 @@
       </widget>
       <widget class="QWidget" name="tab_binToLog">
        <attribute name="title">
-        <string>Convert binary to text log </string>
+        <string>Bin to log converter</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="2" column="3">
@@ -279,7 +279,7 @@
       </widget>
       <widget class="QWidget" name="tab_Results">
        <attribute name="title">
-        <string>Results</string>
+        <string>Modify</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
@@ -399,6 +399,128 @@
            <widget class="QPushButton" name="pb_confirmExclusions">
             <property name="text">
              <string>Apply changes</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_done">
+       <attribute name="title">
+        <string>Done</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="label_info">
+          <property name="text">
+           <string>Georeferencing successeded!</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QLabel" name="label_done_out">
+            <property name="text">
+             <string>Outlier count:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_done_out_val">
+            <property name="text">
+             <string>100</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLabel" name="label_done_mean">
+            <property name="text">
+             <string>Mean difference</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_done_mean_val">
+            <property name="text">
+             <string>100</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>What do you want to do next:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QPushButton" name="pb_newSession">
+            <property name="text">
+             <string>New session</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_manualEdit">
+            <property name="text">
+             <string>Manual edit</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_exif">
+            <property name="text">
+             <string>Tag in exif</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_photoBackup">
+            <property name="text">
+             <string>Generete fileset backup</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_raport">
+            <property name="text">
+             <string>Generate raport</string>
             </property>
            </widget>
           </item>

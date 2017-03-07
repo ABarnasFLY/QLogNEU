@@ -58,12 +58,17 @@ private slots:
 
     void on_pb_undo_clicked();
 
+    void on_pb_manualEdit_clicked();
+
+    void on_pb_newSession_clicked();
+
 private:
     Ui::MainWindow *ui;
     ProgressWindow *m_progresWindow;
     DataAnalysis *m_analizer;
     void resizeEvent(QResizeEvent *event);
     void showResult();
+    void showDone();
 
     QVector<QPushButton*> m_skipCam;
     QVector<QPushButton*> m_skipPic;

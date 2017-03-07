@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_progresWindow->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
     m_progresWindow->hide();
     ui->tabWidget->removeTab(3);
+    ui->tabWidget->removeTab(3);
     ui->table_result->setEditTriggers(QTableWidget::NoEditTriggers);
 }
 
@@ -109,7 +110,8 @@ void MainWindow::on_pb_run_clicked()
 {
     if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_pics->text()),ui->le_log->text(),this);
     m_analizer->run();
-    showResult();
+    showDone();
+   // showResult();
     ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
@@ -117,6 +119,8 @@ void MainWindow::on_pb_rin_run_clicked()
 {
     if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
     m_analizer->run();
+    showDone();
+  //  showResult();
 }
 
 void MainWindow::refreshResult()
@@ -150,8 +154,8 @@ void MainWindow::showResult()
     ui->label_outCount->setText(QString::number(m_analizer->outliersCount()));
     ui->label_meanValue->setText(QString::number(m_analizer->meanError()));
     ui->tabWidget->removeTab(0);
-    ui->tabWidget->removeTab(0);
-    ui->tabWidget->removeTab(0);
+    //ui->tabWidget->removeTab(0);
+    //ui->tabWidget->removeTab(0);
     ui->tabWidget->addTab(ui->tab_Results,"Result");
     m_skipCam.clear();
     m_skipPic.clear();
@@ -186,6 +190,18 @@ void MainWindow::showResult()
     }
 }
 
+void MainWindow::showDone()
+{
+    ui->tabWidget->removeTab(0);
+    ui->tabWidget->removeTab(0);
+    ui->tabWidget->removeTab(0);
+    ui->tabWidget->addTab(ui->tab_done,"Done");
+    if(m_analizer->meanError() > 1 || m_analizer->outliersCount() > 10) ui->label_info->setText("Georeferencing finished, sets don't fit. Try manual edition");
+    else ui->label_info->setText("Georeferencing successfull");
+    ui->label_done_mean_val->setText(QString::number(m_analizer->meanError()));
+    ui->label_done_out_val->setText(QString::number(m_analizer->outliersCount()));
+}
+
 void MainWindow::on_pb_reset_clicked()
 {
     if(m_analizer) delete m_analizer;
@@ -193,7 +209,7 @@ void MainWindow::on_pb_reset_clicked()
     ui->tabWidget->removeTab(0);
     ui->tabWidget->addTab(ui->tab_paths_no_rtk, "Parser");
     ui->tabWidget->addTab(ui->tab_paths_rtk, "Parser RTK");
-    ui->tabWidget->addTab(ui->tab_binToLog, "COnvert binary to text log");
+    ui->tabWidget->addTab(ui->tab_binToLog, "Bin to log converter");
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -203,12 +219,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::on_pb_confirmExclusions_clicked()
 {
-    QVector<int> l;
-    QVector<int> p;
-    l.push_back(14);
-    l.push_back(10);
-    m_analizer->Modify(p,l);
-    refreshResult();
+    showDone();
 }
 
 void MainWindow::on_table_result_cellClicked(int row, int column)
@@ -231,4 +242,19 @@ void MainWindow::on_pb_undo_clicked()
 {
     m_analizer->undo();
     refreshResult();
+}
+
+void MainWindow::on_pb_manualEdit_clicked()
+{
+    showResult();
+}
+
+void MainWindow::on_pb_newSession_clicked()
+{
+    if(m_analizer) delete m_analizer;
+    m_analizer = 0;
+    ui->tabWidget->removeTab(0);
+    ui->tabWidget->addTab(ui->tab_paths_no_rtk, "Parser");
+    ui->tabWidget->addTab(ui->tab_paths_rtk, "Parser RTK");
+    ui->tabWidget->addTab(ui->tab_binToLog, "COnvert binary to text log");
 }
