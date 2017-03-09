@@ -10,8 +10,13 @@ ParserRTK::ParserRTK(QString logPath, QString rinexPath, QString posPath, QObjec
 
 void ParserRTK::run()
 {
+    connect(&m_log,SIGNAL(updateProgress(int)),this,SLOT(onUpdateProgress(int)));
+    connect(&m_log,SIGNAL(setProgressMax(int)),this,SLOT(onSetMaxProgress(int)));
+    emit sendMessage("Processing RINEX");
     m_rinex.run();
+    emit sendMessage("Looking for coordinetes");
     m_ppRTK.run();
+    emit sendMessage("Fit details");
     m_log.run();
 
 }

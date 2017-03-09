@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = QLogParserNEU
+TARGET = QLogParser2
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -52,7 +52,8 @@ SOURCES += main.cpp\
     rinexparser.cpp \
     rtkpostprocessparser.cpp \
     rtklogparser.cpp \
-    location.cpp
+    location.cpp \
+    analizerthread.cpp
 
 HEADERS  += mainwindow.h \
     parsemachine.h \
@@ -84,7 +85,8 @@ HEADERS  += mainwindow.h \
     rinexparser.h \
     rtkpostprocessparser.h \
     rtklogparser.h \
-    location.h
+    location.h \
+    analizerthread.h
 
 FORMS    += mainwindow.ui \
     progresswindow.ui

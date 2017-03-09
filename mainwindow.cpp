@@ -109,18 +109,57 @@ void MainWindow::on_pb_binToLog_convert_clicked()
 void MainWindow::on_pb_run_clicked()
 {
     if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_pics->text()),ui->le_log->text(),this);
-    m_analizer->run();
+    connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
+    connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
+    connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
+
+    AnalizerThread *aThread = new AnalizerThread();
+    aThread->setAnalizer(m_analizer);
+    m_progresWindow->show();
+    this->setDisabled(true);
+
+    QEventLoop loop;
+    connect(aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+    aThread->start();
+    loop.exec();
+    this->setEnabled(true);
+    m_progresWindow->hide();
+    delete aThread;
     showDone();
    // showResult();
     ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
 }
 
 void MainWindow::on_pb_rin_run_clicked()
 {
     if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
+    connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
+    connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
+    connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
+
+    AnalizerThread *aThread = new AnalizerThread();
+    aThread->setAnalizer(m_analizer);
+    m_progresWindow->show();
+    this->setDisabled(true);
+    QEventLoop loop;
+    connect(aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+    aThread->start();
+    loop.exec();
+    this->setEnabled(true);
+    m_progresWindow->hide();
+    delete aThread;
+    showDone();
+   // showResult();
+    ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+
+    /*
+    ///
+    if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
     m_analizer->run();
     showDone();
-  //  showResult();
+  //  showResult();*/
 }
 
 void MainWindow::refreshResult()
@@ -132,7 +171,7 @@ void MainWindow::refreshResult()
     QVector<double> vectorCam = m_analizer->delayPic();
     m_skipCam.clear();
     m_skipPic.clear();
-    ui->table_result->clear();
+    ui->table_result->clearContents();
     ui->table_result->setRowCount(vectorOutput.size());
     for(int i = 0; i < ui->table_result->rowCount(); i++)
     {

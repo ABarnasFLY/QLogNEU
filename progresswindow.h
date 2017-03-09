@@ -18,6 +18,7 @@ public:
 public slots:
     void updateProgress(int value);
     void setProgresBarMaxValue(int value);
+    void showMessage(QString value);
 
 private:
     Ui::ProgressWindow *ui;

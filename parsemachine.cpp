@@ -11,12 +11,14 @@ ParseMachine::ParseMachine(QString logPath, QObject *parent):
 
 void ParseMachine::run()
 {
+    emit sendMessage("Parser is working");
     State_line state = INIT;
     while(!getEof())
     {
         switch (state) {
         case INIT:
             state = on_Init();
+            emit maxProgresValue(m_logFile.size());
             break;
         case FILL_FORMAT_TABLE:
             state = on_FillFormatTable();
@@ -40,6 +42,7 @@ void ParseMachine::run()
             setEof(true);
             break;
         }
+        emit currentProgress(m_logFile.pos());
     }
     m_logFile.close();
 }
@@ -200,4 +203,14 @@ void ParseMachine::print()
 QVector<CamLog_t> ParseMachine::getVectCamLog() const
 {
     return m_vectCamLog;
+}
+
+void ParseMachine::onUpdateProgress(int v)
+{
+    emit currentProgress(v);
+}
+
+void ParseMachine::onSetMaxProgress(int v)
+{
+    emit maxProgresValue(v);
 }

@@ -14,6 +14,7 @@
 #include "progresswindow.h"
 #include "DataSetAnalysis.h"
 #include "converterthread.h"
+#include "analizerthread.h"
 
 namespace Ui {
 class MainWindow;

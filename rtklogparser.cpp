@@ -1,6 +1,7 @@
 #include "rtklogparser.h"
 #include <QDebug>
 RTKLogParser::RTKLogParser(QFile *log, QVector<CamLog_t> *vec):
+    QObject(),
     m_log(log),
     m_vectCamLog(vec),
     m_logStream(log)
@@ -10,6 +11,7 @@ RTKLogParser::RTKLogParser(QFile *log, QVector<CamLog_t> *vec):
 
 void RTKLogParser::run()
 {
+    int picsDone = 0;
     bool end = false;
     State state = INIT;
     while(!end)
@@ -17,6 +19,7 @@ void RTKLogParser::run()
         switch (state) {
         case INIT:
             state = on_Init();
+            emit setProgressMax(m_vectCamLog->size());
             break;
         case FORMAT_DETECTION:
             state = on_FormatDetection();
@@ -38,6 +41,8 @@ void RTKLogParser::run()
             end = true;
             break;
         }
+        picsDone++;
+        emit updateProgress(picsDone);
     }
 }
 

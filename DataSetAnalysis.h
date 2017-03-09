@@ -69,6 +69,14 @@ public:
     void skipPic(int n);
     void undo();
     void printToFile(QString saveFilepath);
+signals:
+    void setProgressBar(int);
+    void updateProgressBar(int);
+    void updateStatus(QString);
+private slots:
+    void onSetProgress(int v);
+    void onUpdateProgress(int v);
+    void onUpdateStatus(QString v);
 };
 
 #endif // DATAANALYSIS_H

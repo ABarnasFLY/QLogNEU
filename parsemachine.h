@@ -68,8 +68,14 @@ public:
     int getPicDone() const;
 
     QVector<CamLog_t> getVectCamLog() const;
-
+protected slots:
+    void onUpdateProgress(int);
+    void onSetMaxProgress(int);
 private:
+signals:
+    void sendMessage(QString);
+    void maxProgresValue(int);
+    void currentProgress(int);
 
 };
 

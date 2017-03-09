@@ -2,11 +2,13 @@
 #define RTKLOGPARSER_H
 #include "global_defs.h"
 #include <QTextStream>
+#include <QObject>
 
 #define PSTATE RTKLogParser::State
 
-class RTKLogParser
+class RTKLogParser :public QObject
 {
+    Q_OBJECT
     QFile *m_log;
     QVector<CamLog_t> *m_vectCamLog;
     QTextStream m_logStream;
@@ -34,6 +36,9 @@ class RTKLogParser
     State on_Conversion();
     State on_Searching();
     State on_Error();
+signals:
+    void updateProgress(int);
+    void setProgressMax(int);
 
 public:
     RTKLogParser(QFile *log, QVector<CamLog_t> *vectCamLog);

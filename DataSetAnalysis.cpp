@@ -96,6 +96,21 @@ void DataAnalysis::printToFile(QString saveFilepath)
     reportFile.close();
 }
 
+void DataAnalysis::onSetProgress(int v)
+{
+    emit setProgressBar(v);
+}
+
+void DataAnalysis::onUpdateProgress(int v)
+{
+    emit updateProgressBar(v);
+}
+
+void DataAnalysis::onUpdateStatus(QString v)
+{
+    emit updateStatus(v);
+}
+
 void DataAnalysis::skipPic(int n)
 {
     m_skipedFilename.push_back((m_fileSet.begin()+n).value());
@@ -124,6 +139,10 @@ void DataAnalysis::Modify(QVector<int> picExclusion, QVector<int> logExclusion)
 
 void DataAnalysis::run()
 {
+    emit updateProgressBar(0);
+    connect(m_parser,SIGNAL(maxProgresValue(int)),this,SLOT(onSetProgress(int)));
+    connect(m_parser,SIGNAL(currentProgress(int)),this,SLOT(onUpdateProgress(int)));
+    connect(m_parser,SIGNAL(sendMessage(QString)),this,SLOT(onUpdateStatus(QString)));
     m_parser->run();
     m_vectCamLog = m_parser->getVectCamLog();
     if(dynamic_cast<ParserRTK*>(m_parser) == nullptr)
@@ -188,7 +207,7 @@ void DataAnalysis::correlationAnalysis()
     {
         m_vectCamLog.remove(0,m_offset_lg);
     }
-
+    qDebug()<<m_offset_lg << ',' << m_offset_fs;
 }
 
 

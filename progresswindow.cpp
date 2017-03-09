@@ -22,3 +22,8 @@ void ProgressWindow::setProgresBarMaxValue(int value)
 {
     ui->progressBar->setMaximum(value);
 }
+
+void ProgressWindow::showMessage(QString value)
+{
+    ui->label->setText(value);
+}
