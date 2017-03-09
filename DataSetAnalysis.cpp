@@ -207,7 +207,6 @@ void DataAnalysis::correlationAnalysis()
     {
         m_vectCamLog.remove(0,m_offset_lg);
     }
-    qDebug()<<m_offset_lg << ',' << m_offset_fs;
 }
 
 
