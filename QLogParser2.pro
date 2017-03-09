@@ -21,7 +21,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
+win32 {
+INCLUDEPATH += $$quote(C:/MinGW/msys/1.0/local/include)
+LIBS += $$quote(C:/MinGW/msys/1.0/lib/libz.dll.a)
+LIBS += $$quote(C:/MinGW/msys/1.0/local/lib/libexiv2.dll.a)
+}
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -53,7 +57,8 @@ SOURCES += main.cpp\
     rtkpostprocessparser.cpp \
     rtklogparser.cpp \
     location.cpp \
-    analizerthread.cpp
+    analizerthread.cpp \
+    exifwriter.cpp
 
 HEADERS  += mainwindow.h \
     parsemachine.h \
@@ -86,7 +91,8 @@ HEADERS  += mainwindow.h \
     rtkpostprocessparser.h \
     rtklogparser.h \
     location.h \
-    analizerthread.h
+    analizerthread.h \
+    exifwriter.h
 
 FORMS    += mainwindow.ui \
     progresswindow.ui

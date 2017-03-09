@@ -15,6 +15,7 @@
 #include "DataSetAnalysis.h"
 #include "converterthread.h"
 #include "analizerthread.h"
+#include "exifwriter.h"
 
 namespace Ui {
 class MainWindow;
@@ -65,6 +66,8 @@ private slots:
 
     void on_pb_raport_clicked();
 
+    void on_pb_exif_clicked();
+
 private:
     Ui::MainWindow *ui;
     ProgressWindow *m_progresWindow;
@@ -77,6 +80,7 @@ private:
     QVector<QPushButton*> m_skipPic;
 
     QString m_defaultDir;
+    QString m_photoProcessed;
     void refreshResult();
 };
 

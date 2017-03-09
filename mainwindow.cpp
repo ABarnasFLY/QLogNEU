@@ -117,6 +117,7 @@ void MainWindow::on_pb_run_clicked()
 {
     if(QDir(ui->le_pics->text()).exists() && QFileInfo(ui->le_log->text()).exists())
     {
+        m_photoProcessed = ui->le_pics->text();
         if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_pics->text()),ui->le_log->text(),this);
         connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
         connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
@@ -148,6 +149,7 @@ void MainWindow::on_pb_rin_run_clicked()
 {
     if(QDir(ui->le_rin_pics->text()).exists() && QFileInfo(ui->le_rin_log->text()).exists() && QFileInfo(ui->le_rin_rinex->text()).exists() && QFileInfo(ui->le_rin_pos->text()).exists())
     {
+        m_photoProcessed = ui->le_rin_pics->text();
         if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
         connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
         connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
@@ -312,4 +314,11 @@ void MainWindow::on_pb_newSession_clicked()
 void MainWindow::on_pb_raport_clicked()
 {
     m_analizer->printToFile(QFileDialog::getSaveFileName(this,"Save raport",m_defaultDir,tr("*.txt")));
+}
+
+void MainWindow::on_pb_exif_clicked()
+{
+    m_analizer->printToFile("tmpRaport.txt");
+    ExifWriter exif("tmpRaport.txt",m_photoProcessed,QFileDialog::getExistingDirectory(this,"Copy directory", m_defaultDir));
+    exif.writeExif();
 }
