@@ -72,6 +72,30 @@ void DataAnalysis::undo()
     print();
 }
 
+void DataAnalysis::printToFile(QString saveFilepath)
+{
+    QFile reportFile(saveFilepath);
+    reportFile.open(QIODevice::WriteOnly);
+    QTextStream reportStream(&reportFile);
+    bool noRTK = false;
+    QVector<QStringList>::iterator it = m_output.begin();
+    if((*it)[7].toInt() < 0 || (*it)[7].toInt() > 2) noRTK = true;
+    reportStream << "Filename, latitude , longitude, altitude, roll, pitch, yaw , Q, tT \n";
+    while(it != m_output.end())
+    {
+        for(int i = 0; i < it->size() - 2; i++)
+        {
+            if(i!=0) reportStream << " ,";
+            if(i!=7) reportStream << (*it)[i];
+            else if(!noRTK) reportStream << (*it)[i];
+            else reportStream << "0";
+        }
+        reportStream << '\n';
+        it++;
+    }
+    reportFile.close();
+}
+
 void DataAnalysis::skipPic(int n)
 {
     m_skipedFilename.push_back((m_fileSet.begin()+n).value());
@@ -176,19 +200,20 @@ void DataAnalysis::print()
     fileSet_t::iterator fileset_iterator = m_fileSet.begin();
     QVector<double>::iterator delayCam_iterator = m_delayPic.begin();
     QVector<double>::iterator delayLog_iterator = m_delayLog.begin();
-    int offset = camLog_iterator->time - fileset_iterator.key();
     for(; camLog_iterator != m_vectCamLog.end() && fileset_iterator != m_fileSet.end(); camLog_iterator++, fileset_iterator++, delayCam_iterator++, delayLog_iterator++ )
     {
         QStringList line;
-        line.push_back(QFileInfo(fileset_iterator.value()).fileName()); //filename
-        line.push_back(QString::number(camLog_iterator->lat,'f',9)); // lat
-        line.push_back(QString::number(camLog_iterator->lon,'f',9)); // lon
-        line.push_back(QString::number(camLog_iterator->alt,'f',9)); // alt
-        QString timeCam, timeLog;
-        timeUtils::showTime(camLog_iterator->time, &timeLog); //time log
+        line.push_back(QFileInfo(fileset_iterator.value()).fileName());   //filename
+        line.push_back(QString::number(camLog_iterator->lat,'f',9));      //lat
+        line.push_back(QString::number(camLog_iterator->lon,'f',9));      //lon
+        line.push_back(QString::number(camLog_iterator->alt,'f',9));      //alt
+        line.push_back(QString::number(camLog_iterator->roll));           //roll
+        line.push_back(QString::number(camLog_iterator->pitch));          //pitch
+        line.push_back(QString::number(camLog_iterator->yaw));            //yaw
+        line.push_back(QString::number(camLog_iterator->Q));              //Q
+        QString timeLog;
+        timeUtils::showTime(camLog_iterator->time, &timeLog);             //time log
         line.push_back(timeLog);
-        timeUtils::showTime(fileset_iterator.key() + offset, &timeCam); // time cam
-        line.push_back(timeCam);
         line.push_back(QString::number(*delayLog_iterator / 1000,'f',9));
         line.push_back(QString::number(*delayCam_iterator / 1000,'f',9));
         m_output.push_back(line);

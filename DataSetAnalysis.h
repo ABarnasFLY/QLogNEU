@@ -68,6 +68,7 @@ public:
     void skipCam(int n);
     void skipPic(int n);
     void undo();
+    void printToFile(QString saveFilepath);
 };
 
 #endif // DATAANALYSIS_H
