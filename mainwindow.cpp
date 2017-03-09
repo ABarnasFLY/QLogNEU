@@ -137,7 +137,7 @@ void MainWindow::refreshResult()
     for(int i = 0; i < ui->table_result->rowCount(); i++)
     {
         ui->table_result->setItem(i,0,new QTableWidgetItem(vectorOutput[i][0]));
-        ui->table_result->setItem(i,1, new QTableWidgetItem(vectorOutput[i][4]));
+        ui->table_result->setItem(i,1, new QTableWidgetItem(vectorOutput[i][8]));
         if(i < vectorCam.size() && i < vectorLog.size())
         {
             ui->table_result->setItem(i,2,new QTableWidgetItem(QString::number(vectorLog[i]/1000,'f',1)));
@@ -257,4 +257,9 @@ void MainWindow::on_pb_newSession_clicked()
     ui->tabWidget->addTab(ui->tab_paths_no_rtk, "Parser");
     ui->tabWidget->addTab(ui->tab_paths_rtk, "Parser RTK");
     ui->tabWidget->addTab(ui->tab_binToLog, "COnvert binary to text log");
+}
+
+void MainWindow::on_pb_raport_clicked()
+{
+    m_analizer->printToFile(QFileDialog::getSaveFileName(this,"Save raport",m_defaultDir,tr("*.txt")));
 }

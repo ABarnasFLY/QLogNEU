@@ -62,6 +62,8 @@ private slots:
 
     void on_pb_newSession_clicked();
 
+    void on_pb_raport_clicked();
+
 private:
     Ui::MainWindow *ui;
     ProgressWindow *m_progresWindow;
