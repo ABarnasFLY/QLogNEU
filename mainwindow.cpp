@@ -84,82 +84,93 @@ void MainWindow::on_pb_binToLog_save_clicked()
 
 void MainWindow::on_pb_binToLog_convert_clicked()
 {
-    QBinToLog *converter = new QBinToLog(ui->le_binToLog_open->text(), ui->le_binToLog_save->text());
-    connect(converter,SIGNAL(setProgressBar(int)),m_progresWindow, SLOT(setProgresBarMaxValue(int)));
-    connect(converter,SIGNAL(refreshProgressBar(int)),m_progresWindow, SLOT(updateProgress(int)));
-    m_progresWindow->show();
-    this->setDisabled(true);
-    ConverterThread *cThread = new ConverterThread();
-    cThread->setConverter(converter);
-    QEventLoop loop;
-    connect(cThread, SIGNAL(finished()),&loop,SLOT(quit()));
-    cThread->start();
-    loop.exec();
-    this->setEnabled(true);
-    m_progresWindow->hide();
-    QMessageBox *msg = new QMessageBox(this);
-    msg->setText("Conversion done!");
-    msg->exec();
-    delete cThread;
-    delete converter;
-    delete msg;
+    if(QFileInfo(ui->le_binToLog_open->text()).exists())
+    {
+        QBinToLog *converter = new QBinToLog(ui->le_binToLog_open->text(), ui->le_binToLog_save->text());
+        connect(converter,SIGNAL(setProgressBar(int)),m_progresWindow, SLOT(setProgresBarMaxValue(int)));
+        connect(converter,SIGNAL(refreshProgressBar(int)),m_progresWindow, SLOT(updateProgress(int)));
+        m_progresWindow->show();
+        this->setDisabled(true);
+        ConverterThread *cThread = new ConverterThread();
+        cThread->setConverter(converter);
+        QEventLoop loop;
+        connect(cThread, SIGNAL(finished()),&loop,SLOT(quit()));
+        cThread->start();
+        loop.exec();
+        this->setEnabled(true);
+        m_progresWindow->hide();
+        QMessageBox *msg = new QMessageBox(this);
+        msg->setText("Conversion done!");
+        msg->exec();
+        delete cThread;
+        delete converter;
+        delete msg;
+    }
+    else
+    {
+        QMessageBox::warning(this,"Wrong files","Selected files or paths doesn't exists");
+    }
 
 }
 
 void MainWindow::on_pb_run_clicked()
 {
-    if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_pics->text()),ui->le_log->text(),this);
-    connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
-    connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
-    connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
+    if(QDir(ui->le_pics->text()).exists() && QFileInfo(ui->le_log->text()).exists())
+    {
+        if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_pics->text()),ui->le_log->text(),this);
+        connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
+        connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
+        connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
 
-    AnalizerThread *aThread = new AnalizerThread();
-    aThread->setAnalizer(m_analizer);
-    m_progresWindow->show();
-    this->setDisabled(true);
+        AnalizerThread *aThread = new AnalizerThread();
+        aThread->setAnalizer(m_analizer);
+        m_progresWindow->show();
+        this->setDisabled(true);
 
-    QEventLoop loop;
-    connect(aThread,SIGNAL(finished()),&loop,SLOT(quit()));
-    aThread->start();
-    loop.exec();
-    this->setEnabled(true);
-    m_progresWindow->hide();
-    delete aThread;
-    showDone();
-   // showResult();
-    ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
+        QEventLoop loop;
+        connect(aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+        aThread->start();
+        loop.exec();
+        this->setEnabled(true);
+        m_progresWindow->hide();
+        delete aThread;
+        showDone();
+        // showResult();
+        ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    }
+    else
+    {
+        QMessageBox::warning(this,"Wrong files","Selected files or paths doesn't exists");
+    }
 }
 
 void MainWindow::on_pb_rin_run_clicked()
 {
-    if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
-    connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
-    connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
-    connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
+    if(QDir(ui->le_rin_pics->text()).exists() && QFileInfo(ui->le_rin_log->text()).exists() && QFileInfo(ui->le_rin_rinex->text()).exists() && QFileInfo(ui->le_rin_pos->text()).exists())
+    {
+        if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
+        connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
+        connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
+        connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
 
-    AnalizerThread *aThread = new AnalizerThread();
-    aThread->setAnalizer(m_analizer);
-    m_progresWindow->show();
-    this->setDisabled(true);
-    QEventLoop loop;
-    connect(aThread,SIGNAL(finished()),&loop,SLOT(quit()));
-    aThread->start();
-    loop.exec();
-    this->setEnabled(true);
-    m_progresWindow->hide();
-    delete aThread;
-    showDone();
-   // showResult();
-    ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-
-    /*
-    ///
-    if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
-    m_analizer->run();
-    showDone();
-  //  showResult();*/
+        AnalizerThread *aThread = new AnalizerThread();
+        aThread->setAnalizer(m_analizer);
+        m_progresWindow->show();
+        this->setDisabled(true);
+        QEventLoop loop;
+        connect(aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+        aThread->start();
+        loop.exec();
+        this->setEnabled(true);
+        m_progresWindow->hide();
+        delete aThread;
+        showDone();
+        ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    }
+    else
+    {
+        QMessageBox::warning(this,"Wrong files","Selected files or paths doesn't exists");
+    }
 }
 
 void MainWindow::refreshResult()
@@ -265,13 +276,13 @@ void MainWindow::on_table_result_cellClicked(int row, int column)
 {
     if(column == 5)
     {
-       m_analizer->skipPic(row);
-       refreshResult();
+        m_analizer->skipPic(row);
+        refreshResult();
     }
     if(column == 6)
     {
-       m_analizer->skipCam(row);
-       refreshResult();
+        m_analizer->skipCam(row);
+        refreshResult();
     }
 }
 
