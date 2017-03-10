@@ -16,6 +16,7 @@
 #include "converterthread.h"
 #include "analizerthread.h"
 #include "exifwriter.h"
+#include "exifthread.h"
 
 namespace Ui {
 class MainWindow;
@@ -73,6 +74,7 @@ private:
     ProgressWindow *m_progresWindow;
     DataAnalysis *m_analizer;
     void resizeEvent(QResizeEvent *event);
+    void closeEvent(QCloseEvent *event);
     void showResult();
     void showDone();
 
@@ -82,6 +84,9 @@ private:
     QString m_defaultDir;
     QString m_photoProcessed;
     void refreshResult();
+    ExifThread m_eThread;
+    AnalizerThread m_aThread;
+    ConverterThread m_cThread;
 };
 
 #endif // MAINWINDOW_H

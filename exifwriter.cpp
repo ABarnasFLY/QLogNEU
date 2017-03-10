@@ -2,6 +2,7 @@
 #include <qdebug.h>
 ExifWriter::ExifWriter(QString raportPath, QString dirPath, QString copyDir = "")
     :
+      QObject(),
       m_rPath(raportPath),
       m_dirPath(dirPath),
       m_copyDir(copyDir)
@@ -18,6 +19,8 @@ void ExifWriter::writeExif()
     QString fileName;
     double lat,lon;
     QStringList lineSplited;
+    int picsDone = 0;
+    emit sendMessage("Copy files with coordinates tagged in exif, could take several minutes");
     while(!stream.atEnd())
     {
         line = stream.readLine();
@@ -43,10 +46,7 @@ void ExifWriter::writeExif()
             else
             {
 
-                if(QFile::copy(m_dirPath + '/' + fileName, m_copyDir + '/' + fileName))
-//                QString filename111 = m_dirPath + '/' + fileName.c_str();
-//                file.setFileName(m_dirPath + '/' + fileName.c_str());
-//                file.copy(m_copyDir + '/' + fileName.c_str());
+                QFile::copy(m_dirPath + '/' + fileName, m_copyDir + '/' + fileName);
                 image = Exiv2::ImageFactory::open(m_copyDir.toStdString() + '/' + fileName.toStdString());
             }
             assert(image.get() != 0);
@@ -67,6 +67,8 @@ void ExifWriter::writeExif()
             // Finally, write the modified Exif data to the image file
             image->setExifData(exifData);
             image->writeMetadata();
+            picsDone++;
+            emit updateProgress(picsDone);
         }
 
     }

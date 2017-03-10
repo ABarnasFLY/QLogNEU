@@ -8,11 +8,15 @@
 #include <exiv2/exiv2.hpp>
 #include <cassert>
 
-class ExifWriter
+class ExifWriter :public QObject
 {
+    Q_OBJECT
     QString m_rPath;
     QString m_dirPath;
     QString m_copyDir;
+signals:
+    void updateProgress(int);
+    void sendMessage(QString);
 public:
     ExifWriter(QString raportPath, QString dirPath, QString copyDir);
     void writeExif();

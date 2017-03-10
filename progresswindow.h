@@ -2,6 +2,9 @@
 #define PROGRESSWINDOW_H
 
 #include <QDialog>
+#include <QTime>
+#include <QTimer>
+
 
 namespace Ui {
 class ProgressWindow;
@@ -19,9 +22,15 @@ public slots:
     void updateProgress(int value);
     void setProgresBarMaxValue(int value);
     void showMessage(QString value);
+    void updateTimeLeft();
+    void TimeLeft();
 
 private:
     Ui::ProgressWindow *ui;
+    QTimer *m_updateTimeLeftTimer;
+    QTimer *m_timeLeftTimer;
+    QTime m_timeLeft;
+    int m_ticks;
 };
 
 #endif // PROGRESSWINDOW_H

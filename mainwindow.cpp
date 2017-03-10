@@ -91,18 +91,16 @@ void MainWindow::on_pb_binToLog_convert_clicked()
         connect(converter,SIGNAL(refreshProgressBar(int)),m_progresWindow, SLOT(updateProgress(int)));
         m_progresWindow->show();
         this->setDisabled(true);
-        ConverterThread *cThread = new ConverterThread();
-        cThread->setConverter(converter);
+        m_cThread.setConverter(converter);
         QEventLoop loop;
-        connect(cThread, SIGNAL(finished()),&loop,SLOT(quit()));
-        cThread->start();
+        connect(&m_cThread, SIGNAL(finished()),&loop,SLOT(quit()));
+        m_cThread.start();
         loop.exec();
         this->setEnabled(true);
         m_progresWindow->hide();
         QMessageBox *msg = new QMessageBox(this);
         msg->setText("Conversion done!");
         msg->exec();
-        delete cThread;
         delete converter;
         delete msg;
     }
@@ -123,18 +121,16 @@ void MainWindow::on_pb_run_clicked()
         connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
         connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
 
-        AnalizerThread *aThread = new AnalizerThread();
-        aThread->setAnalizer(m_analizer);
+        m_aThread.setAnalizer(m_analizer);
         m_progresWindow->show();
         this->setDisabled(true);
 
         QEventLoop loop;
-        connect(aThread,SIGNAL(finished()),&loop,SLOT(quit()));
-        aThread->start();
+        connect(&m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+        m_aThread.start();
         loop.exec();
         this->setEnabled(true);
         m_progresWindow->hide();
-        delete aThread;
         showDone();
         // showResult();
         ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -155,17 +151,15 @@ void MainWindow::on_pb_rin_run_clicked()
         connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
         connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
 
-        AnalizerThread *aThread = new AnalizerThread();
-        aThread->setAnalizer(m_analizer);
+        m_aThread.setAnalizer(m_analizer);
         m_progresWindow->show();
         this->setDisabled(true);
         QEventLoop loop;
-        connect(aThread,SIGNAL(finished()),&loop,SLOT(quit()));
-        aThread->start();
+        connect(&m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+        m_aThread.start();
         loop.exec();
         this->setEnabled(true);
         m_progresWindow->hide();
-        delete aThread;
         showDone();
         ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     }
@@ -173,6 +167,23 @@ void MainWindow::on_pb_rin_run_clicked()
     {
         QMessageBox::warning(this,"Wrong files","Selected files or paths doesn't exists");
     }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(m_aThread.isRunning())
+    {
+        m_aThread.terminate();
+    }
+    if(m_cThread.isRunning())
+    {
+        m_cThread.terminate();
+    }
+    if(m_eThread.isRunning())
+    {
+        m_eThread.terminate();
+    }
+
 }
 
 void MainWindow::refreshResult()
@@ -320,5 +331,18 @@ void MainWindow::on_pb_exif_clicked()
 {
     m_analizer->printToFile("tmpRaport.txt");
     ExifWriter exif("tmpRaport.txt",m_photoProcessed,QFileDialog::getExistingDirectory(this,"Copy directory", m_defaultDir));
-    exif.writeExif();
+    m_progresWindow->show();
+    connect(&exif,SIGNAL(updateProgress(int)),m_progresWindow,SLOT(updateProgress(int)));
+    connect(&exif,SIGNAL(sendMessage(QString)),m_progresWindow,SLOT(showMessage(QString)));
+    m_progresWindow->setProgresBarMaxValue(m_analizer->output().size());
+    m_eThread.setWriter(&exif);
+    QEventLoop loop;
+    connect(&m_eThread,SIGNAL(finished()),&loop,SLOT(quit()));
+    m_progresWindow->show();
+    this->setDisabled(true);
+    m_eThread.start();
+    loop.exec();
+    m_progresWindow->hide();
+    this->setDisabled(false);
+    //exif.writeExif();
 }
