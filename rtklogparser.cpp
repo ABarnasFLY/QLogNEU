@@ -19,12 +19,12 @@ void RTKLogParser::run()
         switch (state) {
         case INIT:
             state = on_Init();
-            emit setProgressMax(m_vectCamLog->size());
             break;
         case FORMAT_DETECTION:
             state = on_FormatDetection();
             break;
         case SYNCHRONIZATION:
+            emit setProgressMax(m_vectCamLog->size());
             state = on_Synchronization();
             break;
         case CONVERSION:

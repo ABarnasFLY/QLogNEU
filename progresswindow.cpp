@@ -36,6 +36,7 @@ void ProgressWindow::updateTimeLeft()
 
 void ProgressWindow::TimeLeft()
 {
+    if(m_timeLeft > QTime(0,0,1))
     m_timeLeft = m_timeLeft.addSecs(-1);
     ui->timeLeft->setText("Time left: " + m_timeLeft.toString("mm:ss"));
 }
