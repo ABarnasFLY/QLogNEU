@@ -61,7 +61,7 @@ timeUtils::convTimeUnix2Ardu(time_t in) //Unix(UTC) to Ardu(GPS for current week
     return out;
 }
 
-void timeUtils::CreatePictureBackupFile( QDir sourceDir, long cam2utcClkOffs, QString fileToSave)
+void timeUtils::CreatePictureBackupFile(QDir sourceDir, long cam2utcClkOffs, QString fileToSave)
 {
     QFile file(fileToSave);
     file.open(QIODevice::WriteOnly);

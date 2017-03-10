@@ -291,7 +291,7 @@ void DataAnalysis::createFileSet(QDir picDir)
             }
         }
     }
-    timeUtils::CreatePictureBackupFile(picDir,0, QString("PictureBackup") + picDir.dirName());
+    timeUtils::CreatePictureBackupFile(picDir,0, QString("PictureBackup") + picDir.dirName()+".txt");
 }
 void DataAnalysis::createFileSet(QString filePath)
 {

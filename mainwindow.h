@@ -69,6 +69,8 @@ private slots:
 
     void on_pb_exif_clicked();
 
+    void on_pb_photoBackup_clicked();
+
 private:
     Ui::MainWindow *ui;
     ProgressWindow *m_progresWindow;

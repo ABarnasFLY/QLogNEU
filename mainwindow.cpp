@@ -346,3 +346,8 @@ void MainWindow::on_pb_exif_clicked()
     this->setDisabled(false);
     //exif.writeExif();
 }
+
+void MainWindow::on_pb_photoBackup_clicked()
+{
+    timeUtils::CreatePictureBackupFile(QDir(m_photoProcessed),0,QFileDialog::getSaveFileName(this,"Create backup of your photo directory", m_defaultDir,tr("*.txt")));
+}
