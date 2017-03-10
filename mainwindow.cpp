@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tabWidget->removeTab(3);
     ui->tabWidget->removeTab(3);
     ui->table_result->setEditTriggers(QTableWidget::NoEditTriggers);
+    ui->pb_restore->setToolTip("If your fileset modification dates are corupted\n(e.g. you archive them and upack) you could restore\n them if you created backup before");
 }
 
 MainWindow::~MainWindow()
@@ -35,14 +36,19 @@ void MainWindow::on_pb_browse_pic_clicked()
     m_defaultDir = QFileInfo(path).absolutePath();
 }
 
+void MainWindow::on_pb_restore_clicked()
+{
+    QString path = QFileDialog::getOpenFileName(this,QString("Open photo backup"),m_defaultDir,tr("*.pbu"));
+    ui->le_pics->setText(path);
+    m_defaultDir = QFileInfo(path).absolutePath();
+}
+
 void MainWindow::on_pb_rin_rinex_clicked()
 {
     QString path = QFileDialog::getOpenFileName(this,QString("Open rinex observations from RTK rover"),m_defaultDir,tr("*.obs"));
     ui->le_rin_rinex->setText(path);
     m_defaultDir = QFileInfo(path).absolutePath();
 }
-
-
 
 void MainWindow::on_pb_rin_pos_clicked()
 {
@@ -58,12 +64,19 @@ void MainWindow::on_pb_rin_log_clicked()
     m_defaultDir = QFileInfo(path).absolutePath();
 }
 
-
 void MainWindow::on_pb_rin_pics_clicked()
 {
     QString path = QFileDialog::getExistingDirectory(this,QString("Open photo directory"),m_defaultDir);
     ui->le_rin_pics->setText(path);
     m_defaultDir = QFileInfo(path).absoluteFilePath();
+}
+
+
+void MainWindow::on_pb_rin_restore_clicked()
+{
+    QString path = QFileDialog::getOpenFileName(this,QString("Open photo backup"),m_defaultDir,tr("*.pbu"));
+    ui->le_rin_pics->setText(path);
+    m_defaultDir = QFileInfo(path).absolutePath();
 }
 
 void MainWindow::on_pb_binToLog_open_clicked()
@@ -113,60 +126,110 @@ void MainWindow::on_pb_binToLog_convert_clicked()
 
 void MainWindow::on_pb_run_clicked()
 {
-    if(QDir(ui->le_pics->text()).exists() && QFileInfo(ui->le_log->text()).exists())
+    if(QFileInfo(ui->le_log->text()).exists())
     {
-        m_photoProcessed = ui->le_pics->text();
-        if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_pics->text()),ui->le_log->text(),this);
-        connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
-        connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
-        connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
+        if(QDir(ui->le_pics->text()).exists())
+        {
+            m_photoProcessed = ui->le_pics->text();
+            if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_pics->text()),ui->le_log->text(),this);
+            connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
+            connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
+            connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
 
-        m_aThread.setAnalizer(m_analizer);
-        m_progresWindow->show();
-        this->setDisabled(true);
+            m_aThread.setAnalizer(m_analizer);
+            m_progresWindow->show();
+            this->setDisabled(true);
 
-        QEventLoop loop;
-        connect(&m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
-        m_aThread.start();
-        loop.exec();
-        this->setEnabled(true);
-        m_progresWindow->hide();
-        showDone();
-        // showResult();
-        ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+            QEventLoop loop;
+            connect(&m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+            m_aThread.start(); //m_analizer->run();
+            loop.exec();
+            this->setEnabled(true);
+            m_progresWindow->hide();
+            showDone();
+            ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+        }
+        else if(ui->le_pics->text().endsWith(".pbu"))
+        {
+            if(!m_analizer) m_analizer = new DataAnalysis(ui->le_pics->text(),ui->le_log->text(),this);
+            connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
+            connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
+            connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
+
+            m_aThread.setAnalizer(m_analizer);
+            m_progresWindow->show();
+            this->setDisabled(true);
+
+            QEventLoop loop;
+            connect(&m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+            m_aThread.start(); //m_analizer->run();
+            loop.exec();
+            this->setEnabled(true);
+            m_progresWindow->hide();
+            showDone();
+            ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+            ui->pb_exif->setDisabled(true);
+            ui->pb_photoBackup->setDisabled(true);
+        }
+        else
+        {
+            QMessageBox::warning(this,"Wrong picture dir","Selected files or paths don't exist");
+        }
     }
-    else
-    {
-        QMessageBox::warning(this,"Wrong files","Selected files or paths doesn't exists");
-    }
+    else QMessageBox::warning(this,"Wrong log","Selected files or paths don't exist");
 }
 
 void MainWindow::on_pb_rin_run_clicked()
 {
-    if(QDir(ui->le_rin_pics->text()).exists() && QFileInfo(ui->le_rin_log->text()).exists() && QFileInfo(ui->le_rin_rinex->text()).exists() && QFileInfo(ui->le_rin_pos->text()).exists())
+    if(QFileInfo(ui->le_rin_log->text()).exists() && QFileInfo(ui->le_rin_rinex->text()).exists() && QFileInfo(ui->le_rin_pos->text()).exists())
     {
-        m_photoProcessed = ui->le_rin_pics->text();
-        if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
-        connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
-        connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
-        connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
+        if(QDir(ui->le_rin_pics->text()).exists())
+        {
+            m_photoProcessed = ui->le_rin_pics->text();
+            if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
+            connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
+            connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
+            connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
 
-        m_aThread.setAnalizer(m_analizer);
-        m_progresWindow->show();
-        this->setDisabled(true);
-        QEventLoop loop;
-        connect(&m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
-        m_aThread.start();
-        loop.exec();
-        this->setEnabled(true);
-        m_progresWindow->hide();
-        showDone();
-        ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+            m_aThread.setAnalizer(m_analizer);
+            m_progresWindow->show();
+            this->setDisabled(true);
+            QEventLoop loop;
+            connect(&m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+            m_aThread.start();
+            loop.exec();
+            this->setEnabled(true);
+            m_progresWindow->hide();
+            showDone();
+            ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+        }
+        else if(ui->le_rin_pics->text().endsWith(".pbu"))
+        {
+            if(!m_analizer) m_analizer = new DataAnalysis(ui->le_rin_pics->text(),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
+            connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
+            connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
+            connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
+
+            m_aThread.setAnalizer(m_analizer);
+            m_progresWindow->show();
+            this->setDisabled(true);
+            QEventLoop loop;
+            connect(&m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+            m_aThread.start();
+            loop.exec();
+            this->setEnabled(true);
+            m_progresWindow->hide();
+            showDone();
+            ui->table_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+            ui->pb_exif->setDisabled(true);
+            ui->pb_photoBackup->setDisabled(true);
+        }
+        else
+        {
+            QMessageBox::warning(this,"Wrong picture dir","Selected files or paths don't exist");
+        }
     }
-    else
-    {
-        QMessageBox::warning(this,"Wrong files","Selected files or paths doesn't exists");
-    }
+    else QMessageBox::warning(this,"Wrong log","Selected files or paths don't exist");
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -273,6 +336,8 @@ void MainWindow::on_pb_reset_clicked()
     ui->tabWidget->addTab(ui->tab_paths_no_rtk, "Parser");
     ui->tabWidget->addTab(ui->tab_paths_rtk, "Parser RTK");
     ui->tabWidget->addTab(ui->tab_binToLog, "Bin to log converter");
+    ui->pb_exif->setDisabled(false);
+    ui->pb_photoBackup->setDisabled(false);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -349,5 +414,7 @@ void MainWindow::on_pb_exif_clicked()
 
 void MainWindow::on_pb_photoBackup_clicked()
 {
-    timeUtils::CreatePictureBackupFile(QDir(m_photoProcessed),0,QFileDialog::getSaveFileName(this,"Create backup of your photo directory", m_defaultDir,tr("*.txt")));
+    timeUtils::CreatePictureBackupFile(QDir(m_photoProcessed),0,QFileDialog::getSaveFileName(this,"Create backup of your photo directory", m_defaultDir,tr("*.pbu")));
 }
+
+

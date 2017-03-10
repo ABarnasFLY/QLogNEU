@@ -71,6 +71,10 @@ private slots:
 
     void on_pb_photoBackup_clicked();
 
+    void on_pb_restore_clicked();
+
+    void on_pb_rin_restore_clicked();
+
 private:
     Ui::MainWindow *ui;
     ProgressWindow *m_progresWindow;
