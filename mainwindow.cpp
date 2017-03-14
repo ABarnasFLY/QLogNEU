@@ -43,12 +43,6 @@ void MainWindow::on_pb_restore_clicked()
     m_defaultDir = QFileInfo(path).absolutePath();
 }
 
-void MainWindow::on_pb_rin_rinex_clicked()
-{
-    QString path = QFileDialog::getOpenFileName(this,QString("Open rinex observations from RTK rover"),m_defaultDir,tr("*.obs"));
-    ui->le_rin_rinex->setText(path);
-    m_defaultDir = QFileInfo(path).absolutePath();
-}
 
 void MainWindow::on_pb_rin_pos_clicked()
 {
@@ -181,12 +175,12 @@ void MainWindow::on_pb_run_clicked()
 
 void MainWindow::on_pb_rin_run_clicked()
 {
-    if(QFileInfo(ui->le_rin_log->text()).exists() && QFileInfo(ui->le_rin_rinex->text()).exists() && QFileInfo(ui->le_rin_pos->text()).exists())
+    if(QFileInfo(ui->le_rin_log->text()).exists() && QFileInfo(ui->le_rin_pos->text()).exists())
     {
         if(QDir(ui->le_rin_pics->text()).exists())
         {
             m_photoProcessed = ui->le_rin_pics->text();
-            if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
+            if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_pos->text(), this);
             connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
             connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
             connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
@@ -205,7 +199,7 @@ void MainWindow::on_pb_rin_run_clicked()
         }
         else if(ui->le_rin_pics->text().endsWith(".pbu"))
         {
-            if(!m_analizer) m_analizer = new DataAnalysis(ui->le_rin_pics->text(),ui->le_rin_log->text(), ui->le_rin_rinex->text(), ui->le_rin_pos->text(), this);
+            if(!m_analizer) m_analizer = new DataAnalysis(ui->le_rin_pics->text(),ui->le_rin_log->text(), ui->le_rin_pos->text(), this);
             connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
             connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
             connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));

@@ -20,22 +20,22 @@ DataAnalysis::DataAnalysis(QDir pics, QString logPath, QObject* parent):
     m_parser = new ParseMachine(logPath, this);
 }
 
-DataAnalysis::DataAnalysis(QString pics, QString logPath, QString rinexPath, QString ppRTKpath, QObject* parent):
+DataAnalysis::DataAnalysis(QString pics, QString logPath, QString ppRTKpath, QObject* parent):
     QObject(parent),
     m_offset_fs(0),
     m_offset_lg(0)
 {
-    m_parser = new ParserRTK(logPath,rinexPath, ppRTKpath, parent);
+    m_parser = new ParserRTK(logPath, ppRTKpath, parent);
     createFileSet(pics);
 }
 
-DataAnalysis::DataAnalysis(QDir pics, QString logPath, QString rinexPath, QString ppRTKpath, QObject* parent):
+DataAnalysis::DataAnalysis(QDir pics, QString logPath, QString ppRTKpath, QObject* parent):
     QObject(parent),
     m_offset_fs(0),
     m_offset_lg(0)
 {
     createFileSet(pics);
-    m_parser = new ParserRTK(logPath,rinexPath, ppRTKpath, parent);
+    m_parser = new ParserRTK(logPath, ppRTKpath, parent);
 }
 
 void DataAnalysis::skipCam(int n)

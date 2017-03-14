@@ -31,7 +31,8 @@ void RTKLogParser::run()
             state = on_Conversion();
             break;
         case SEARCHING:
-            state = on_Searching();
+            state = on_Searching();       
+            picsDone++;
             break;
         case DONE:
             end = true;
@@ -41,7 +42,6 @@ void RTKLogParser::run()
             end = true;
             break;
         }
-        picsDone++;
         emit updateProgress(picsDone);
     }
 }
@@ -128,7 +128,7 @@ PSTATE RTKLogParser::on_Synchronization()
 PSTATE RTKLogParser::on_Conversion()
 {
     m_currentTimeMark = m_it_vectCamLog->time - m_timeDifference;
-    if(m_it_vectCamLog != m_vectCamLog->end()) m_it_vectCamLog++;
+    if(m_it_vectCamLog != m_vectCamLog->end() -1) m_it_vectCamLog++;
     else return DONE;
 
     return SEARCHING;

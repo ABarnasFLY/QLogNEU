@@ -60,7 +60,8 @@ SOURCES += main.cpp\
     location.cpp \
     analizerthread.cpp \
     exifwriter.cpp \
-    exifthread.cpp
+    exifthread.cpp \
+    rtkeventlogparser.cpp
 
 HEADERS  += mainwindow.h \
     parsemachine.h \
@@ -95,7 +96,8 @@ HEADERS  += mainwindow.h \
     location.h \
     analizerthread.h \
     exifwriter.h \
-    exifthread.h
+    exifthread.h \
+    rtkeventlogparser.h
 
 FORMS    += mainwindow.ui \
     progresswindow.ui

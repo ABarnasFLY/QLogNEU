@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>562</width>
-    <height>351</height>
+    <height>372</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -119,89 +119,72 @@
         <string>Parser RTK</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_4">
-        <item row="8" column="2">
+        <item row="6" column="2">
          <widget class="QPushButton" name="pb_rin_pics">
           <property name="text">
            <string>Browse</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="1">
+        <item row="2" column="1">
          <widget class="QLabel" name="label_10">
           <property name="text">
            <string>UAV log path (.log)</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="2">
+        <item row="1" column="2">
          <widget class="QPushButton" name="pb_rin_pos">
           <property name="text">
            <string>Browse</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="label_8">
-          <property name="text">
-           <string>Rinex raw data from RTK rover</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QPushButton" name="pb_rin_rinex">
-          <property name="text">
-           <string>Browse</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="2">
+        <item row="3" column="2">
          <widget class="QPushButton" name="pb_rin_log">
           <property name="text">
            <string>Browse</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="1" column="1">
          <widget class="QLineEdit" name="le_rin_pos"/>
         </item>
-        <item row="2" column="1">
+        <item row="0" column="1">
          <widget class="QLabel" name="label_9">
           <property name="text">
-           <string>RTK postprocessing file (.pos)</string>
+           <string>RTK event log file (.pos)</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="1">
+        <item row="3" column="1">
          <widget class="QLineEdit" name="le_rin_log"/>
         </item>
-        <item row="7" column="1">
+        <item row="5" column="1">
          <widget class="QLabel" name="label_11">
           <property name="text">
            <string>Picture directory path</string>
           </property>
          </widget>
         </item>
-        <item row="8" column="1">
+        <item row="6" column="1">
          <widget class="QLineEdit" name="le_rin_pics"/>
         </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="le_rin_rinex"/>
-        </item>
-        <item row="11" column="2">
+        <item row="10" column="2">
          <widget class="QPushButton" name="pb_rin_run">
           <property name="text">
            <string>Run</string>
           </property>
          </widget>
         </item>
-        <item row="10" column="1" colspan="2">
+        <item row="9" column="1" colspan="2">
          <widget class="Line" name="line_5">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
-        <item row="9" column="1">
+        <item row="8" column="1">
          <spacer name="verticalSpacer_2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -214,7 +197,7 @@
           </property>
          </spacer>
         </item>
-        <item row="9" column="2">
+        <item row="7" column="2">
          <widget class="QPushButton" name="pb_rin_restore">
           <property name="text">
            <string>Restore from file</string>

@@ -35,8 +35,6 @@ private slots:
 
     void on_pb_browse_pic_clicked();
 
-    void on_pb_rin_rinex_clicked();
-
     void on_pb_rin_pos_clicked();
 
     void on_pb_rin_log_clicked();

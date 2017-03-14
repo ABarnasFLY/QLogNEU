@@ -60,8 +60,8 @@ public:
     QVector<QStringList> output() const;
     double meanError() const;
     int outliersCount() const;
-    DataAnalysis(QDir pics, QString logPath, QString rinexPath, QString ppRTKpath, QObject *parent);
-    DataAnalysis(QString pics, QString logPath, QString rinexPath, QString ppRTKpath, QObject *parent);
+    DataAnalysis(QDir pics, QString logPath, QString ppRTKpath, QObject *parent);
+    DataAnalysis(QString pics, QString logPath, QString ppRTKpath, QObject *parent);
     QVector<double> delayPic() const;
     QVector<double> delayLog() const;
     void Modify(QVector<int> picExclusions, QVector<int> logExclusion);
