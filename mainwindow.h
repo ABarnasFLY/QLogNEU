@@ -88,9 +88,9 @@ private:
     QString m_defaultDir;
     QString m_photoProcessed;
     void refreshResult();
-    ExifThread m_eThread;
-    AnalizerThread m_aThread;
-    ConverterThread m_cThread;
+    ExifThread *m_eThread;
+    AnalizerThread *m_aThread;
+    ConverterThread *m_cThread;
 };
 
 #endif // MAINWINDOW_H

@@ -14,7 +14,8 @@ DataAnalysis::DataAnalysis(QString pics, QString logPath, QObject* parent):
 DataAnalysis::DataAnalysis(QDir pics, QString logPath, QObject* parent):
     QObject(parent),
     m_offset_fs(0),
-    m_offset_lg(0)
+    m_offset_lg(0),
+    m_canBeUndo(false)
 {
     createFileSet(pics);
     m_parser = new ParseMachine(logPath, this);
@@ -23,7 +24,8 @@ DataAnalysis::DataAnalysis(QDir pics, QString logPath, QObject* parent):
 DataAnalysis::DataAnalysis(QString pics, QString logPath, QString ppRTKpath, QObject* parent):
     QObject(parent),
     m_offset_fs(0),
-    m_offset_lg(0)
+    m_offset_lg(0),
+    m_canBeUndo(false)
 {
     m_parser = new ParserRTK(logPath, ppRTKpath, parent);
     createFileSet(pics);
@@ -32,7 +34,8 @@ DataAnalysis::DataAnalysis(QString pics, QString logPath, QString ppRTKpath, QOb
 DataAnalysis::DataAnalysis(QDir pics, QString logPath, QString ppRTKpath, QObject* parent):
     QObject(parent),
     m_offset_fs(0),
-    m_offset_lg(0)
+    m_offset_lg(0),
+    m_canBeUndo(false)
 {
     createFileSet(pics);
     m_parser = new ParserRTK(logPath, ppRTKpath, parent);

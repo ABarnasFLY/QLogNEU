@@ -5,7 +5,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     m_defaultDir(DEFAULT_DIR),
-    m_analizer(0)
+    m_analizer(0),
+    m_aThread(0),
+    m_cThread(0),
+    m_eThread(0)
 {
     ui->setupUi(this);
     m_progresWindow = new ProgressWindow(this);
@@ -91,6 +94,7 @@ void MainWindow::on_pb_binToLog_save_clicked()
 
 void MainWindow::on_pb_binToLog_convert_clicked()
 {
+    m_cThread = new ConverterThread();
     if(QFileInfo(ui->le_binToLog_open->text()).exists())
     {
         QBinToLog *converter = new QBinToLog(ui->le_binToLog_open->text(), ui->le_binToLog_save->text());
@@ -98,10 +102,10 @@ void MainWindow::on_pb_binToLog_convert_clicked()
         connect(converter,SIGNAL(refreshProgressBar(int)),m_progresWindow, SLOT(updateProgress(int)));
         m_progresWindow->show();
         this->setDisabled(true);
-        m_cThread.setConverter(converter);
+        m_cThread->setConverter(converter);
         QEventLoop loop;
-        connect(&m_cThread, SIGNAL(finished()),&loop,SLOT(quit()));
-        m_cThread.start();
+        connect(m_cThread, SIGNAL(finished()),&loop,SLOT(quit()));
+        m_cThread->start();
         loop.exec();
         this->setEnabled(true);
         m_progresWindow->hide();
@@ -115,11 +119,13 @@ void MainWindow::on_pb_binToLog_convert_clicked()
     {
         QMessageBox::warning(this,"Wrong files","Selected files or paths doesn't exists");
     }
-
+    delete m_cThread;
+    m_cThread = 0;
 }
 
 void MainWindow::on_pb_run_clicked()
 {
+    m_aThread = new AnalizerThread();
     if(QFileInfo(ui->le_log->text()).exists())
     {
         if(QDir(ui->le_pics->text()).exists())
@@ -130,13 +136,13 @@ void MainWindow::on_pb_run_clicked()
             connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
             connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
 
-            m_aThread.setAnalizer(m_analizer);
+            m_aThread->setAnalizer(m_analizer);
             m_progresWindow->show();
             this->setDisabled(true);
 
             QEventLoop loop;
-            connect(&m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
-            m_aThread.start(); //m_analizer->run();
+            connect(m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+            m_aThread->start(); //m_analizer->run();
             loop.exec();
             this->setEnabled(true);
             m_progresWindow->hide();
@@ -150,13 +156,13 @@ void MainWindow::on_pb_run_clicked()
             connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
             connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
 
-            m_aThread.setAnalizer(m_analizer);
+            m_aThread->setAnalizer(m_analizer);
             m_progresWindow->show();
             this->setDisabled(true);
 
             QEventLoop loop;
-            connect(&m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
-            m_aThread.start(); //m_analizer->run();
+            connect(m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+            m_aThread->start(); //m_analizer->run();
             loop.exec();
             this->setEnabled(true);
             m_progresWindow->hide();
@@ -171,26 +177,29 @@ void MainWindow::on_pb_run_clicked()
         }
     }
     else QMessageBox::warning(this,"Wrong log","Selected files or paths don't exist");
+
+    delete m_aThread;
+    m_aThread = 0;
 }
 
 void MainWindow::on_pb_rin_run_clicked()
 {
+    m_aThread = new AnalizerThread();
     if(QFileInfo(ui->le_rin_log->text()).exists() && QFileInfo(ui->le_rin_pos->text()).exists())
     {
         if(QDir(ui->le_rin_pics->text()).exists())
         {
+            m_progresWindow->show();
+            m_progresWindow->showMessage("Processing...");
             m_photoProcessed = ui->le_rin_pics->text();
             if(!m_analizer) m_analizer = new DataAnalysis(QDir(ui->le_rin_pics->text()),ui->le_rin_log->text(), ui->le_rin_pos->text(), this);
             connect(m_analizer,SIGNAL(setProgressBar(int)),m_progresWindow,SLOT(setProgresBarMaxValue(int)));
             connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
             connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
-
-            m_aThread.setAnalizer(m_analizer);
-            m_progresWindow->show();
-            this->setDisabled(true);
+            m_aThread->setAnalizer(m_analizer);
             QEventLoop loop;
-            connect(&m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
-            m_aThread.start();
+            connect(m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+            m_aThread->start();
             loop.exec();
             this->setEnabled(true);
             m_progresWindow->hide();
@@ -204,12 +213,12 @@ void MainWindow::on_pb_rin_run_clicked()
             connect(m_analizer,SIGNAL(updateProgressBar(int)),m_progresWindow,SLOT(updateProgress(int)));
             connect(m_analizer,SIGNAL(updateStatus(QString)),m_progresWindow,SLOT(showMessage(QString)));
 
-            m_aThread.setAnalizer(m_analizer);
+            m_aThread->setAnalizer(m_analizer);
             m_progresWindow->show();
             this->setDisabled(true);
             QEventLoop loop;
-            connect(&m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
-            m_aThread.start();
+            connect(m_aThread,SIGNAL(finished()),&loop,SLOT(quit()));
+            m_aThread->start();
             loop.exec();
             this->setEnabled(true);
             m_progresWindow->hide();
@@ -224,21 +233,24 @@ void MainWindow::on_pb_rin_run_clicked()
         }
     }
     else QMessageBox::warning(this,"Wrong log","Selected files or paths don't exist");
+
+    delete m_aThread;
+    m_aThread = 0;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if(m_aThread.isRunning())
+    if(m_aThread)
     {
-        m_aThread.terminate();
+        delete m_aThread;
     }
-    if(m_cThread.isRunning())
+    if(m_cThread)
     {
-        m_cThread.terminate();
+        delete m_cThread;
     }
-    if(m_eThread.isRunning())
+    if(m_eThread)
     {
-        m_eThread.terminate();
+        delete m_eThread;
     }
 
 }
@@ -389,26 +401,26 @@ void MainWindow::on_pb_raport_clicked()
 void MainWindow::on_pb_exif_clicked()
 {
     m_analizer->printToFile("tmpRaport.txt");
+    m_eThread = new ExifThread();
     ExifWriter exif("tmpRaport.txt",m_photoProcessed,QFileDialog::getExistingDirectory(this,"Copy directory", m_defaultDir));
     m_progresWindow->show();
     connect(&exif,SIGNAL(updateProgress(int)),m_progresWindow,SLOT(updateProgress(int)));
     connect(&exif,SIGNAL(sendMessage(QString)),m_progresWindow,SLOT(showMessage(QString)));
     m_progresWindow->setProgresBarMaxValue(m_analizer->output().size());
-    m_eThread.setWriter(&exif);
+    m_eThread->setWriter(&exif);
     QEventLoop loop;
-    connect(&m_eThread,SIGNAL(finished()),&loop,SLOT(quit()));
+    connect(m_eThread,SIGNAL(finished()),&loop,SLOT(quit()));
     m_progresWindow->show();
     this->setDisabled(true);
-    m_eThread.start();
+    m_eThread->start();
     loop.exec();
     m_progresWindow->hide();
     this->setDisabled(false);
-    //exif.writeExif();
+    delete m_eThread;
+    m_eThread = 0;
 }
 
 void MainWindow::on_pb_photoBackup_clicked()
 {
     timeUtils::CreatePictureBackupFile(QDir(m_photoProcessed),0,QFileDialog::getSaveFileName(this,"Create backup of your photo directory", m_defaultDir,tr("*.pbu")));
 }
-
-
